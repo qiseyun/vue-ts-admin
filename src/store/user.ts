@@ -1,8 +1,10 @@
 import { defineStore } from 'pinia'
 import type { UserInfo } from '@/types'
+import { getUserInfo, getPermissions, logout as logoutApi } from '@/api/auth'
 
 interface UserState {
   token: string
+  expiresTime: number
   userInfo: UserInfo | null
   permissions: string[]
 }
@@ -10,7 +12,10 @@ interface UserState {
 export const useUserStore = defineStore('user', {
   state: (): UserState => {
     const userInfoStr = localStorage.getItem('userInfo')
+    const permissionsStr = localStorage.getItem('permissions')
     let userInfo: UserInfo | null = null
+    let permissions: string[] = []
+    
     if (userInfoStr) {
       try {
         userInfo = JSON.parse(userInfoStr)
@@ -18,10 +23,20 @@ export const useUserStore = defineStore('user', {
         console.error('Failed to parse userInfo from localStorage', e)
       }
     }
+    
+    if (permissionsStr) {
+      try {
+        permissions = JSON.parse(permissionsStr)
+      } catch (e) {
+        console.error('Failed to parse permissions from localStorage', e)
+      }
+    }
+    
     return {
       token: localStorage.getItem('token') || '',
+      expiresTime: Number(localStorage.getItem('expiresTime')) || 0,
       userInfo,
-      permissions: userInfo?.permissions || [],
+      permissions,
     }
   },
 
@@ -34,30 +49,74 @@ export const useUserStore = defineStore('user', {
 
   actions: {
     // 设置token
-    setToken(token: string) {
+    setToken(token: string, expiresTime: number) {
       this.token = token
-      localStorage.setItem('token', 'Bearer ' + token)
+      this.expiresTime = expiresTime
+      localStorage.setItem('token', token)
+      localStorage.setItem('expiresTime', String(expiresTime))
     },
 
     // 设置用户信息
     setUserInfo(userInfo: UserInfo) {
       this.userInfo = userInfo
-      this.permissions = userInfo.permissions || []
       localStorage.setItem('userInfo', JSON.stringify(userInfo))
     },
 
+    // 设置权限
+    setPermissions(permissions: string[]) {
+      this.permissions = permissions
+      localStorage.setItem('permissions', JSON.stringify(permissions))
+    },
+
     // 登录
-    async login(token: string, userInfo: UserInfo) {
-      this.setToken(token)
-      this.setUserInfo(userInfo)
+    async login(token: string, expiresTime: number) {
+      this.setToken(token, expiresTime)
+      // 获取用户信息
+      await this.fetchUserInfo()
+      // 获取权限列表
+      await this.fetchPermissions()
+    },
+
+    // 获取用户信息
+    async fetchUserInfo() {
+      try {
+        const res = await getUserInfo()
+        this.setUserInfo(res.data)
+        return res.data
+      } catch (error) {
+        console.error('获取用户信息失败：', error)
+        throw error
+      }
+    },
+
+    // 获取权限列表
+    async fetchPermissions() {
+      try {
+        const res = await getPermissions()
+        this.setPermissions(res.data)
+        return res.data
+      } catch (error) {
+        console.error('获取权限列表失败：', error)
+        throw error
+      }
     },
 
     // 退出登录
-    logout() {
-      this.token = ''
-      this.userInfo = null
-      this.permissions = []
-      localStorage.removeItem('token')
+    async logout() {
+      try {
+        await logoutApi()
+      } catch (error) {
+        console.error('退出登录接口调用失败：', error)
+      } finally {
+        this.token = ''
+        this.expiresTime = 0
+        this.userInfo = null
+        this.permissions = []
+        localStorage.removeItem('token')
+        localStorage.removeItem('expiresTime')
+        localStorage.removeItem('userInfo')
+        localStorage.removeItem('permissions')
+      }
     },
 
     // 检查是否有权限

@@ -31,30 +31,35 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response: AxiosResponse) => {
     const res = response.data
-    
-    // 如果返回的状态码不是200，说明接口有问题
-    if (res.code !== 200) {
-      ElMessage.error(res.message || '请求失败')
-      
-      // 401: 未登录或token过期
-      if (res.code === 401) {
+    // 如果返回的状态码不是0，说明接口有问题
+    if (res.code !== 0) {
+      // Token异常处理
+      const tokenErrorCodes = [401, 11011, 11012, 11013, 11014, 11015, 11016]
+      if (tokenErrorCodes.includes(res.code)) {
+        ElMessage.error(res.msg || '登录状态已失效，请重新登录')
         localStorage.removeItem('token')
+        localStorage.removeItem('userInfo')
+        localStorage.removeItem('permissions')
+        localStorage.removeItem('expiresTime')
         window.location.href = '/login'
+        return Promise.reject(new Error(res.msg || '登录状态已失效'))
       }
-      
-      return Promise.reject(new Error(res.message || '请求失败'))
+      ElMessage.error(res.msg || '请求失败')
+      return Promise.reject(new Error(res.msg || '请求失败'))
     }
     
     return res
   },
   (error) => {
     console.error('响应错误：', error)
-    
     if (error.response) {
       switch (error.response.status) {
         case 401:
           ElMessage.error('登录已过期，请重新登录')
           localStorage.removeItem('token')
+          localStorage.removeItem('userInfo')
+          localStorage.removeItem('permissions')
+          localStorage.removeItem('expiresTime')
           window.location.href = '/login'
           break
         case 403:
@@ -67,7 +72,7 @@ service.interceptors.response.use(
           ElMessage.error('服务器错误')
           break
         default:
-          ElMessage.error(error.response.data.message || '请求失败')
+          ElMessage.error(error.response.data.msg || '请求失败')
       }
     } else {
       ElMessage.error('网络错误，请检查网络连接')

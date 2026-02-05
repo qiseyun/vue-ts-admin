@@ -52,10 +52,12 @@
           <el-dropdown @command="handleCommand">
             <div class="user-info">
               <el-avatar src="./miku.jfif" />
-              <span class="username">{{ userStore.userInfo?.nickname }}</span>
+              <span class="username">{{ userStore.userInfo?.realName }}</span>
             </div>
             <template #dropdown>
               <el-dropdown-menu>
+                <el-dropdown-item>{{ userStore.userInfo?.email }}</el-dropdown-item>
+                <el-dropdown-item>{{ userStore.userInfo?.telephone }}</el-dropdown-item>
                 <el-dropdown-item command="profile">个人中心</el-dropdown-item>
                 <el-dropdown-item divided command="logout">退出登录</el-dropdown-item>
               </el-dropdown-menu>
@@ -142,13 +144,13 @@ const toggleCollapse = () => {
 }
 
 // 处理下拉菜单命令
-const handleCommand = (command: string) => {
+const handleCommand = async (command: string) => {
   if (command === 'logout') {
     ElMessageBox.confirm('确定要退出登录吗？', '提示', {
       type: 'warning',
-    }).then(() => {
-      userStore.logout()
-      router.push('/login')
+    }).then(async () => {
+      await userStore.logout()
+      await router.push('/login')
       ElMessage.success('退出成功')
     }).catch(() => {
       // 取消

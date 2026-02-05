@@ -2,12 +2,11 @@
 export interface UserInfo {
   id: number
   username: string
-  nickname: string
-  avatar?: string
-  email?: string
-  phone?: string
-  roles: string[]
-  permissions: string[]
+  telephone: string
+  realName: string
+  headPortrait: string
+  email: string
+  userType: number
 }
 
 // 登录表单类型
@@ -18,14 +17,14 @@ export interface LoginForm {
 
 // 登录响应类型
 export interface LoginResponse {
-  token: string
-  userInfo: UserInfo
+  accessToken: string
+  expiresTime: number
 }
 
 // API响应类型
 export interface ApiResponse<T = any> {
   code: number
-  message: string
+  msg: string
   data: T
 }
 

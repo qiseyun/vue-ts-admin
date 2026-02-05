@@ -48,6 +48,7 @@ import {useRouter} from 'vue-router'
 import {ElMessage, type FormInstance, type FormRules} from 'element-plus'
 import {useUserStore} from '@/store/user'
 import type {LoginForm} from '@/types'
+import {login as loginApi} from '@/api/auth'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -56,8 +57,8 @@ const loginFormRef = ref<FormInstance>()
 const loading = ref(false)
 
 const loginForm = reactive<LoginForm>({
-  username: 'admin',
-  password: '123456',
+  username: '',
+  password: '',
 })
 
 const rules: FormRules = {
@@ -74,25 +75,11 @@ const handleLogin = async () => {
 
     loading.value = true
     try {
-      // 模拟登录接口
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      // 调用登录接口
+      const res = await loginApi(loginForm)
 
-      // 模拟后端返回的数据
-      const mockData = {
-        token: 'mock-token-' + Date.now(),
-        userInfo: {
-          id: 1,
-          username: loginForm.username,
-          nickname: '管理员',
-          avatar: 'https://oss-image.mikuyun.online/miku/hatsune%20miku%20avatar.jpg',
-          email: 'admin@example.com',
-          roles: ['admin'],
-          permissions: ['*:*:*'], // 超级管理员拥有所有权限
-        },
-      }
-
-      // 存储用户信息
-      await userStore.login(mockData.token, mockData.userInfo)
+      // 存储token和过期时间
+      await userStore.login(res.data.accessToken, res.data.expiresTime)
 
       ElMessage.success('登录成功')
       await router.push('/')
@@ -163,7 +150,7 @@ const animate = () => {
       const pointI = points[i]
       const pointJ = points[j]
       if (!pointI || !pointJ) continue
-      
+
       const dx = pointI.x - pointJ.x
       const dy = pointI.y - pointJ.y
       const distance = Math.sqrt(dx * dx + dy * dy)

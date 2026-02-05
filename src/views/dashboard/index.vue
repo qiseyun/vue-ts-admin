@@ -79,10 +79,10 @@
             <span>系统信息</span>
           </template>
           <el-descriptions :column="1">
-            <el-descriptions-item label="系统名称">Vue Admin</el-descriptions-item>
+            <el-descriptions-item label="系统名称">mikuyun Admin</el-descriptions-item>
             <el-descriptions-item label="版本号">v1.0.0</el-descriptions-item>
-            <el-descriptions-item label="框架">Vue 3 + TypeScript</el-descriptions-item>
-            <el-descriptions-item label="UI框架">Element Plus</el-descriptions-item>
+            <el-descriptions-item label="框架">Vue3 + TypeScript</el-descriptions-item>
+            <el-descriptions-item label="UI框架">Element-Plus</el-descriptions-item>
           </el-descriptions>
         </el-card>
       </el-col>

@@ -1,5 +1,5 @@
-import { post, get } from '@/utils/request'
-import type { LoginForm, LoginResponse, UserInfo, ApiResponse } from '@/types'
+import {post, get} from '@/utils/request'
+import type {LoginForm, LoginResponse, UserInfo, ApiResponse} from '@/types'
 
 // 登录接口
 export function login(data: LoginForm) {
@@ -8,7 +8,12 @@ export function login(data: LoginForm) {
 
 // 获取用户信息
 export function getUserInfo() {
-  return get<ApiResponse<UserInfo>>('/auth/userinfo')
+  return get<ApiResponse<UserInfo>>('/auth/getInfo')
+}
+
+// 获取权限列表
+export function getPermissions() {
+  return get<ApiResponse<string[]>>('/auth/permissions')
 }
 
 // 退出登录
