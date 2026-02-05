@@ -12,7 +12,7 @@
         router
       >
         <template v-for="route in menuRoutes" :key="route.path">
-          <el-sub-menu v-if="route.children && route.children.length > 0" :index="route.path">
+          <el-sub-menu v-if="route.children && route.children.length > 0 && route.meta.multiMenu" :index="route.path">
             <template #title>
               <el-icon v-if="route.meta?.icon">
                 <component :is="route.meta.icon" />
@@ -51,7 +51,7 @@
         <div class="header-right">
           <el-dropdown @command="handleCommand">
             <div class="user-info">
-              <el-avatar :src="userStore.userInfo?.avatar" />
+              <el-avatar src="./miku.jfif" />
               <span class="username">{{ userStore.userInfo?.nickname }}</span>
             </div>
             <template #dropdown>
@@ -89,13 +89,15 @@ const isCollapse = ref(false)
 
 // 获取菜单路由
 const menuRoutes = computed(() => {
-  // 获取所有顶级路由(component 为 Layout 的路由)
+  // 获取所有顶级路由
   const topRoutes = router.getRoutes().filter(route => {
     // 跳过隐藏的路由
     if (route.meta?.hidden) return false
-    
-    // 只要顶级路由(路径为 / 或者有 children 的路由)
-    return (route.path === '/' || route.path === '/system') && route.children && route.children.length > 0
+
+    // 只要有 children 的顶级路由（使用 Layout 的路由）
+    // 排除嵌套的子路由（路径中有多个 / 的）
+    const pathSegments = route.path.split('/').filter(Boolean)
+    return pathSegments.length === 1 && route.children && route.children.length > 0
   })
 
   // 过滤子路由的权限
@@ -126,7 +128,7 @@ const menuRoutes = computed(() => {
 // 当前激活的菜单
 const activeMenu = computed(() => {
   const { path } = route
-  if (path === '/') return '/dashboard'
+  if (path === '/') return '/dashboard/index'
   return path
 })
 

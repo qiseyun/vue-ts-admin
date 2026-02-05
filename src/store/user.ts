@@ -28,7 +28,6 @@ export const useUserStore = defineStore('user', {
   getters: {
     // 是否已登录
     isLogin: (state) => !!state.token,
-    
     // 获取用户权限
     getPermissions: (state) => state.permissions,
   },
@@ -87,7 +86,7 @@ export const useUserStore = defineStore('user', {
       })
     },
 
-    // 检查是否有任一权限
+    // 检查是否有任一个权限
     hasAnyPermission(permissions: string[]): boolean {
       return permissions.some(permission => this.permissions.includes(permission))
     },

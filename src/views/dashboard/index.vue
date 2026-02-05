@@ -8,7 +8,7 @@
               <User/>
             </el-icon>
             <div class="stat-info">
-              <div class="stat-value">1,234</div>
+              <div class="stat-value">0</div>
               <div class="stat-label">用户总数</div>
             </div>
           </div>
@@ -21,7 +21,7 @@
               <Document/>
             </el-icon>
             <div class="stat-info">
-              <div class="stat-value">567</div>
+              <div class="stat-value">0</div>
               <div class="stat-label">订单数量</div>
             </div>
           </div>
@@ -34,7 +34,7 @@
               <TrendCharts/>
             </el-icon>
             <div class="stat-info">
-              <div class="stat-value">¥89,234</div>
+              <div class="stat-value">¥0.00</div>
               <div class="stat-label">销售额</div>
             </div>
           </div>
@@ -47,7 +47,7 @@
               <ChatDotRound/>
             </el-icon>
             <div class="stat-info">
-              <div class="stat-value">123</div>
+              <div class="stat-value">0</div>
               <div class="stat-label">消息数量</div>
             </div>
           </div>
@@ -62,10 +62,10 @@
             <span>快捷操作</span>
           </template>
           <div class="quick-actions">
-            <el-button type="primary" icon="Plus">新增用户</el-button>
-            <el-button type="success" icon="DocumentAdd">新增订单</el-button>
-            <el-button type="warning" icon="Download">导出数据</el-button>
-            <el-button type="info" icon="Setting">系统设置</el-button>
+            <el-button type="primary" icon="Plus" @click="() => { $router.push('/permission/user') }">用户管理</el-button>
+            <el-button type="success" icon="DocumentAdd" @click="() => { $router.push('/permission/role') }">角色管理</el-button>
+            <el-button type="warning" icon="Download" @click="() => { $router.push('/permission/menu') }">菜单管理</el-button>
+            <el-button type="warning" icon="Setting" @click="() => { $router.push('/system/setting') }">系统设置</el-button>
           </div>
         </el-card>
       </el-col>
@@ -149,6 +149,7 @@
 
   .quick-actions {
     display: flex;
+    flex-direction: column;
     flex-wrap: wrap;
     gap: 10px;
   }

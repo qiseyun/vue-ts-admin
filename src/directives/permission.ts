@@ -10,10 +10,8 @@ export const permission: Directive = {
   mounted(el: HTMLElement, binding: DirectiveBinding) {
     const { value } = binding
     const userStore = useUserStore()
-
     if (value) {
       let hasPermission = false
-
       if (Array.isArray(value)) {
         // 数组形式，任意一个权限满足即可
         hasPermission = userStore.hasAnyPermission(value)
@@ -21,7 +19,6 @@ export const permission: Directive = {
         // 字符串形式
         hasPermission = userStore.hasPermission(value) || userStore.hasPermission('*:*:*')
       }
-
       if (!hasPermission) {
         // 没有权限，移除元素
         el.parentNode?.removeChild(el)

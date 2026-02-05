@@ -10,10 +10,6 @@ export {}
 
 /* prettier-ignore */
 declare module 'vue' {
-  export interface GlobalDirectives {
-    vPermission: typeof import('./directives/permission')['permission']
-    vRole: typeof import('./directives/permission')['role']
-  }
   export interface GlobalComponents {
     ElAside: typeof import('element-plus/es')['ElAside']
     ElAvatar: typeof import('element-plus/es')['ElAvatar']
@@ -45,5 +41,9 @@ declare module 'vue' {
     HelloWorld: typeof import('./components/HelloWorld.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+  }
+  export interface GlobalDirectives {
+    vPermission: typeof import('./directives/permission')['permission']
+    vRole: typeof import('./directives/permission')['role']
   }
 }

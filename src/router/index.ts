@@ -2,51 +2,83 @@ import {createRouter, createWebHistory, type RouteRecordRaw} from 'vue-router'
 import {useUserStore} from '@/store/user'
 import {ElMessage} from 'element-plus'
 
+// 核心页面
+const Layout = () => import('@/layout/index.vue')
+const ERROR_404 = () => import('@/views/error/404.vue')
+const Login = () => import('@/views/login/index.vue')
+// 控制台
+const Dashboard = () => import('@/views/dashboard/index.vue')
+// 权限管理
+const User = () => import('@/views/system/user/index.vue')
+const Role = () => import('@/views/system/role/index.vue')
+const Menu = () => import('@/views/system/menu/index.vue')
+// 系统管理
+const Setting = () => import('@/views/system/setting/index.vue')
+
+
 // 路由配置
 const routes: RouteRecordRaw[] = [
   {
+    path: '/',
+    redirect: '/dashboard',
+  },
+  //   404 页面
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: ERROR_404,
+    meta: {
+      title: '404',
+      hidden: true,
+    },
+  },
+  //   登录页面
+  {
     path: '/login',
     name: 'Login',
-    component: () => import('@/views/login/index.vue'),
+    component: Login,
     meta: {
       title: '登录',
       hidden: true,
     },
   },
+  //   控制台
   {
-    path: '/',
-    name: 'Layout',
-    component: () => import('@/layout/index.vue'),
+    path: '/dashboard',
+    component: Layout,
     redirect: '/dashboard',
     meta: {
-      title: '首页',
+      title: '控制台',
       icon: 'HomeFilled',
+      multiMenu: false,
     },
     children: [
       {
-        path: 'dashboard',
+        path: '/dashboard',
         name: 'Dashboard',
-        component: () => import('@/views/dashboard/index.vue'),
+        component: Dashboard,
         meta: {
-          title: '首页',
+          title: '控制台',
           icon: 'HomeFilled',
         },
       },
     ],
   },
+  //   权限管理
   {
-    path: '/system',
-    component: () => import('@/layout/index.vue'),
-    redirect: '/system/user',
+    path: '/permission',
+    component: Layout,
+    redirect: '/permission/user',
     meta: {
-      title: '系统管理',
-      icon: 'Setting',
+      title: '权限管理',
+      icon: 'Lock',
+      multiMenu: true,
     },
     children: [
       {
-        path: '/system/user',
+        path: '/permission/user',
         name: 'User',
-        component: () => import('@/views/system/user/index.vue'),
+        component: User,
         meta: {
           title: '用户管理',
           icon: 'User',
@@ -54,9 +86,9 @@ const routes: RouteRecordRaw[] = [
         },
       },
       {
-        path: '/system/role',
+        path: '/permission/role',
         name: 'Role',
-        component: () => import('@/views/system/role/index.vue'),
+        component: Role,
         meta: {
           title: '角色管理',
           icon: 'Avatar',
@@ -64,9 +96,9 @@ const routes: RouteRecordRaw[] = [
         },
       },
       {
-        path: '/system/menu',
+        path: '/permission/menu',
         name: 'Menu',
-        component: () => import('@/views/system/menu/index.vue'),
+        component: Menu,
         meta: {
           title: '菜单管理',
           icon: 'Menu',
@@ -75,16 +107,30 @@ const routes: RouteRecordRaw[] = [
       },
     ],
   },
+  //   系统管理
   {
-    path: '/:pathMatch(.*)*',
-    name: 'NotFound',
-    component: () => import('@/views/error/404.vue'),
+    path: '/system',
+    component: Layout,
+    redirect: '/system/setting',
     meta: {
-      title: '404',
-      hidden: true,
+      title: '系统管理',
+      icon: 'Setting',
+      multiMenu: true,
     },
+    children: [
+      {
+        path: '/system/setting',
+        name: 'Setting',
+        component: Setting,
+        meta: {
+          title: '系统设置',
+          icon: 'Setting',
+        },
+      },
+    ],
   },
 ]
+
 
 // 创建路由实例
 const router = createRouter({
@@ -92,13 +138,12 @@ const router = createRouter({
   routes,
 })
 
+
 // 路由守卫
 router.beforeEach((to, _from, next) => {
   const userStore = useUserStore()
-
   // 设置页面标题
   document.title = `${to.meta.title || '管理后台'} - Vue Admin`
-
   // 判断是否需要登录
   if (to.path !== '/login') {
     if (!userStore.isLogin) {

@@ -53,8 +53,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import {onMounted, ref} from 'vue'
+import {ElMessage, ElMessageBox} from 'element-plus'
 
 interface Menu {
   id: number
@@ -72,7 +72,7 @@ const tableData = ref<Menu[]>([])
 // 模拟获取菜单列表
 const getMenuList = () => {
   // 模拟数据
-  const mockData: Menu[] = [
+  tableData.value = [
     {
       id: 1,
       title: '首页',
@@ -121,8 +121,6 @@ const getMenuList = () => {
       ],
     },
   ]
-
-  tableData.value = mockData
 }
 
 const handleAdd = () => {
