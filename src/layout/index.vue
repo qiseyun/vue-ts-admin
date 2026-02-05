@@ -64,6 +64,9 @@
         </div>
       </el-header>
 
+      <!-- 标签页导航 -->
+      <tags-view />
+
       <el-main class="main-content">
         <router-view v-slot="{ Component }">
           <transition name="fade-transform" mode="out-in">
@@ -80,6 +83,7 @@ import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import { useUserStore } from '@/store/user'
+import TagsView from '@/components/TagsView.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -224,6 +228,7 @@ const handleCommand = (command: string) => {
     background-color: #fff;
     box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
     padding: 0 20px;
+    height: 60px;
 
     .header-left {
       .collapse-icon {

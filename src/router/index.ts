@@ -6,6 +6,7 @@ import {ElMessage} from 'element-plus'
 const Layout = () => import('@/layout/index.vue')
 const ERROR_404 = () => import('@/views/error/404.vue')
 const Login = () => import('@/views/login/index.vue')
+const Redirect = () => import('@/views/redirect/index.vue')
 // 控制台
 const Dashboard = () => import('@/views/dashboard/index.vue')
 // 权限管理
@@ -21,6 +22,23 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/',
     redirect: '/dashboard',
+  },
+  //   重定向页面（用于刷新）
+  {
+    path: '/redirect',
+    component: Layout,
+    meta: {
+      hidden: true,
+    },
+    children: [
+      {
+        path: '/redirect/:path(.*)',
+        component: Redirect,
+        meta: {
+          hidden: true,
+        },
+      },
+    ],
   },
   //   404 页面
   {
