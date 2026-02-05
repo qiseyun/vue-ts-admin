@@ -4,20 +4,20 @@
       <el-scrollbar class="tags-view-scrollbar">
         <div class="tags-view-list">
           <router-link
-            v-for="tag in visitedViews"
-            :key="tag.path"
-            :to="tag.path"
-            class="tags-view-item"
-            :class="isActive(tag) ? 'active' : ''"
-            @contextmenu.prevent="openContextMenu($event, tag)"
+              v-for="tag in visitedViews"
+              :key="tag.path"
+              :to="tag.path"
+              class="tags-view-item"
+              :class="isActive(tag) ? 'active' : ''"
+              @contextmenu.prevent="openContextMenu($event, tag)"
           >
             <span class="tag-title">{{ tag.title }}</span>
             <el-icon
-              v-if="!isAffix(tag)"
-              class="close-icon"
-              @click.prevent.stop="closeSelectedTag(tag)"
+                v-if="!isAffix(tag)"
+                class="close-icon"
+                @click.prevent.stop="closeSelectedTag(tag)"
             >
-              <Close />
+              <Close/>
             </el-icon>
           </router-link>
         </div>
@@ -26,24 +26,32 @@
 
     <!-- 右键菜单 -->
     <ul
-      v-show="contextMenuVisible"
-      :style="{ left: contextMenuLeft + 'px', top: contextMenuTop + 'px' }"
-      class="context-menu"
+        v-show="contextMenuVisible"
+        :style="{ left: contextMenuLeft + 'px', top: contextMenuTop + 'px' }"
+        class="context-menu"
     >
       <li @click="refreshSelectedTag(selectedTag)">
-        <el-icon><Refresh /></el-icon>
+        <el-icon>
+          <Refresh/>
+        </el-icon>
         刷新
       </li>
       <li v-if="!isAffix(selectedTag)" @click="closeSelectedTag(selectedTag)">
-        <el-icon><Close /></el-icon>
+        <el-icon>
+          <Close/>
+        </el-icon>
         关闭
       </li>
       <li @click="closeOthersTags">
-        <el-icon><CircleClose /></el-icon>
+        <el-icon>
+          <CircleClose/>
+        </el-icon>
         关闭其他
       </li>
       <li @click="closeAllTags">
-        <el-icon><FolderDelete /></el-icon>
+        <el-icon>
+          <FolderDelete/>
+        </el-icon>
         关闭所有
       </li>
     </ul>
@@ -51,9 +59,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed, nextTick, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useTagsViewStore, type TagView } from '@/store/tagsView'
+import {ref, watch, computed, nextTick, onMounted} from 'vue'
+import {useRoute, useRouter} from 'vue-router'
+import {useTagsViewStore, type TagView} from '@/store/tagsView'
 
 const route = useRoute()
 const router = useRouter()
@@ -85,7 +93,7 @@ const addTags = () => {
 
 // 关闭选中的标签
 const closeSelectedTag = (view: TagView) => {
-  tagsViewStore.delView(view).then(({ visitedViews }) => {
+  tagsViewStore.delView(view).then(({visitedViews}) => {
     if (isActive(view)) {
       toLastView(visitedViews, view)
     }
@@ -95,7 +103,7 @@ const closeSelectedTag = (view: TagView) => {
 // 刷新选中的标签
 const refreshSelectedTag = (view: TagView) => {
   tagsViewStore.delCachedView(view).then(() => {
-    const { path } = view
+    const {path} = view
     nextTick(() => {
       router.replace({
         path: '/redirect' + path
@@ -112,7 +120,7 @@ const closeOthersTags = () => {
 
 // 关闭所有标签
 const closeAllTags = () => {
-  tagsViewStore.delAllViews().then(({ visitedViews }) => {
+  tagsViewStore.delAllViews().then(({visitedViews}) => {
     toLastView(visitedViews, selectedTag.value)
   })
 }
@@ -126,7 +134,7 @@ const toLastView = (visitedViews: TagView[], view: TagView) => {
     // 如果没有标签了，跳转到首页
     if (view.name === 'Dashboard') {
       // 重新加载
-      router.replace({ path: '/redirect' + view.path })
+      router.replace({path: '/redirect' + view.path})
     } else {
       router.push('/dashboard')
     }
@@ -159,10 +167,10 @@ const closeContextMenu = () => {
 
 // 监听路由变化
 watch(
-  () => route.path,
-  () => {
-    addTags()
-  }
+    () => route.path,
+    () => {
+      addTags()
+    }
 )
 
 // 监听点击事件，关闭右键菜单
@@ -182,7 +190,7 @@ onMounted(() => {
 <style scoped lang="scss">
 .tags-view-container {
   width: 100%;
-  height: 40px;
+  height: 45px;
   background-color: #fff;
   border-bottom: 1px solid #d8dce5;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12);
