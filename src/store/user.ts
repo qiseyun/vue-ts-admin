@@ -63,7 +63,28 @@ export const useUserStore = defineStore('user', {
 
     // 检查是否有权限
     hasPermission(permission: string): boolean {
-      return this.permissions.includes(permission)
+      // 直接匹配
+      if (this.permissions.includes(permission)) {
+        return true
+      }
+      // 处理通配符权限 "*:*:*" 形式
+      const parts = permission.split(':')
+      if (parts.length !== 3) {
+        return false
+      }
+      return this.permissions.some(userPerm => {
+        const userParts = userPerm.split(':')
+        if (userParts.length !== 3) {
+          return false
+        }
+        // 逐级匹配，支持通配符 *
+        for (let i = 0; i < 3; i++) {
+          if (userParts[i] !== '*' && userParts[i] !== parts[i]) {
+            return false
+          }
+        }
+        return true
+      })
     },
 
     // 检查是否有任一权限

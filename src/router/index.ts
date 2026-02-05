@@ -44,7 +44,7 @@ const routes: RouteRecordRaw[] = [
     },
     children: [
       {
-        path: 'user',
+        path: '/system/user',
         name: 'User',
         component: () => import('@/views/system/user/index.vue'),
         meta: {
@@ -54,7 +54,7 @@ const routes: RouteRecordRaw[] = [
         },
       },
       {
-        path: 'role',
+        path: '/system/role',
         name: 'Role',
         component: () => import('@/views/system/role/index.vue'),
         meta: {
@@ -64,7 +64,7 @@ const routes: RouteRecordRaw[] = [
         },
       },
       {
-        path: 'menu',
+        path: '/system/menu',
         name: 'Menu',
         component: () => import('@/views/system/menu/index.vue'),
         meta: {
