@@ -64,10 +64,6 @@
           <div class="quick-actions">
             <el-button type="primary" icon="Plus" @click="() => { $router.push('/permission/user') }">用户管理
             </el-button>
-            <el-button type="success" icon="DocumentAdd" @click="() => { $router.push('/permission/role') }">角色管理
-            </el-button>
-            <el-button type="warning" icon="Download" @click="() => { $router.push('/permission/menu') }">菜单管理
-            </el-button>
             <el-button type="warning" icon="Setting" @click="() => { $router.push('/system/setting') }">系统设置
             </el-button>
           </div>
@@ -153,7 +149,7 @@
 
   .quick-actions {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     flex-wrap: wrap;
     gap: 10px;
   }
