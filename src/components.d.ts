@@ -44,8 +44,4 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     TagsView: typeof import('./components/TagsView.vue')['default']
   }
-  export interface GlobalDirectives {
-    vPermission: typeof import('./directives/permission')['permission']
-    vRole: typeof import('./directives/permission')['role']
-  }
 }

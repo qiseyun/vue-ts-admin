@@ -39,7 +39,7 @@ export const role: Directive = {
 
     if (value && userStore.userInfo) {
       let hasRole = false
-      const roles = userStore.userInfo.roles
+      const roles = userStore.roles
 
       if (Array.isArray(value)) {
         // 数组形式，任意一个角色满足即可

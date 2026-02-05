@@ -1,11 +1,12 @@
-import { defineStore } from 'pinia'
-import type { UserInfo } from '@/types'
-import { getUserInfo, getPermissions, logout as logoutApi } from '@/api/auth'
+import {defineStore} from 'pinia'
+import type {UserInfo} from '@/types'
+import {getUserInfo, getPermissions, logout as logoutApi} from '@/api/auth'
 
 interface UserState {
   token: string
   expiresTime: number
   userInfo: UserInfo | null
+  roles: string[]
   permissions: string[]
 }
 
@@ -14,8 +15,9 @@ export const useUserStore = defineStore('user', {
     const userInfoStr = localStorage.getItem('userInfo')
     const permissionsStr = localStorage.getItem('permissions')
     let userInfo: UserInfo | null = null
+    let roles: string[] = []
     let permissions: string[] = []
-    
+
     if (userInfoStr) {
       try {
         userInfo = JSON.parse(userInfoStr)
@@ -23,7 +25,7 @@ export const useUserStore = defineStore('user', {
         console.error('Failed to parse userInfo from localStorage', e)
       }
     }
-    
+
     if (permissionsStr) {
       try {
         permissions = JSON.parse(permissionsStr)
@@ -31,11 +33,12 @@ export const useUserStore = defineStore('user', {
         console.error('Failed to parse permissions from localStorage', e)
       }
     }
-    
+
     return {
       token: localStorage.getItem('token') || '',
       expiresTime: Number(localStorage.getItem('expiresTime')) || 0,
       userInfo,
+      roles,
       permissions,
     }
   },
