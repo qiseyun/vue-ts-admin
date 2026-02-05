@@ -9,30 +9,30 @@
       <el-form ref="loginFormRef" :model="loginForm" :rules="rules" class="login-form">
         <el-form-item prop="username">
           <el-input
-            v-model="loginForm.username"
-            placeholder="请输入用户名"
-            prefix-icon="User"
-            size="large"
+              v-model="loginForm.username"
+              placeholder="请输入用户名"
+              prefix-icon="User"
+              size="large"
           />
         </el-form-item>
         <el-form-item prop="password">
           <el-input
-            v-model="loginForm.password"
-            type="password"
-            placeholder="请输入密码"
-            prefix-icon="Lock"
-            size="large"
-            show-password
-            @keyup.enter="handleLogin"
+              v-model="loginForm.password"
+              type="password"
+              placeholder="请输入密码"
+              prefix-icon="Lock"
+              size="large"
+              show-password
+              @keyup.enter="handleLogin"
           />
         </el-form-item>
         <el-form-item>
           <el-button
-            type="primary"
-            size="large"
-            class="login-btn"
-            :loading="loading"
-            @click="handleLogin"
+              type="primary"
+              size="large"
+              class="login-btn"
+              :loading="loading"
+              @click="handleLogin"
           >
             登录
           </el-button>
@@ -43,11 +43,11 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
-import { useUserStore } from '@/store/user'
-import type { LoginForm } from '@/types'
+import {reactive, ref, onMounted, onUnmounted} from 'vue'
+import {useRouter} from 'vue-router'
+import {ElMessage, type FormInstance, type FormRules} from 'element-plus'
+import {useUserStore} from '@/store/user'
+import type {LoginForm} from '@/types'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -61,22 +61,22 @@ const loginForm = reactive<LoginForm>({
 })
 
 const rules: FormRules = {
-  username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-  password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+  username: [{required: true, message: '请输入用户名', trigger: 'blur'}],
+  password: [{required: true, message: '请输入密码', trigger: 'blur'}],
 }
 
 // 登录
 const handleLogin = async () => {
   if (!loginFormRef.value) return
-  
+
   await loginFormRef.value.validate(async (valid) => {
     if (!valid) return
-    
+
     loading.value = true
     try {
       // 模拟登录接口
       await new Promise(resolve => setTimeout(resolve, 1000))
-      
+
       // 模拟后端返回的数据
       const mockData = {
         token: 'mock-token-' + Date.now(),
@@ -84,18 +84,18 @@ const handleLogin = async () => {
           id: 1,
           username: loginForm.username,
           nickname: '管理员',
-          avatar: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
+          avatar: 'https://oss-image.mikuyun.online/miku/hatsune%20miku%20avatar.jpg',
           email: 'admin@example.com',
           roles: ['admin'],
           permissions: ['*:*:*'], // 超级管理员拥有所有权限
         },
       }
-      
+
       // 存储用户信息
       await userStore.login(mockData.token, mockData.userInfo)
-      
+
       ElMessage.success('登录成功')
-      router.push('/')
+      await router.push('/')
     } catch (error) {
       ElMessage.error('登录失败')
       console.error(error)
@@ -114,14 +114,14 @@ let animationId: number
 const initCanvas = () => {
   canvas = document.getElementById('canvas') as HTMLCanvasElement
   if (!canvas) return
-  
+
   ctx = canvas.getContext('2d')
   if (!ctx) return
-  
+
   // 设置canvas尺寸
   canvas.width = window.innerWidth
   canvas.height = window.innerHeight
-  
+
   // 创建点
   const pointCount = 80
   for (let i = 0; i < pointCount; i++) {
@@ -132,49 +132,53 @@ const initCanvas = () => {
       vy: (Math.random() - 0.5) * 0.5,
     })
   }
-  
+
   animate()
 }
 
 const animate = () => {
   if (!canvas || !ctx) return
-  
+
   ctx.clearRect(0, 0, canvas.width, canvas.height)
-  
+
   // 更新点的位置
   points.forEach(point => {
     point.x += point.vx
     point.y += point.vy
-    
+
     // 边界反弹
     if (point.x < 0 || point.x > canvas!.width) point.vx *= -1
     if (point.y < 0 || point.y > canvas!.height) point.vy *= -1
-    
+
     // 绘制点
     ctx!.beginPath()
     ctx!.arc(point.x, point.y, 2, 0, Math.PI * 2)
     ctx!.fillStyle = 'rgba(64, 158, 255, 0.5)'
     ctx!.fill()
   })
-  
+
   // 绘制连线
   for (let i = 0; i < points.length; i++) {
     for (let j = i + 1; j < points.length; j++) {
-      const dx = points[i].x - points[j].x
-      const dy = points[i].y - points[j].y
-      const distance = Math.sqrt(dx * dx + dy * dy)
+      const pointI = points[i]
+      const pointJ = points[j]
+      if (!pointI || !pointJ) continue
       
+      const dx = pointI.x - pointJ.x
+      const dy = pointI.y - pointJ.y
+      const distance = Math.sqrt(dx * dx + dy * dy)
+
       if (distance < 150) {
         ctx!.beginPath()
-        ctx!.moveTo(points[i].x, points[i].y)
-        ctx!.lineTo(points[j].x, points[j].y)
+        ctx!.moveTo(pointI.x, pointI.y)
+        ctx!.lineTo(pointJ.x, pointJ.y)
         ctx!.strokeStyle = `rgba(64, 158, 255, ${0.2 * (1 - distance / 150)})`
         ctx!.lineWidth = 1
         ctx!.stroke()
       }
     }
   }
-  
+
   animationId = requestAnimationFrame(animate)
 }
 

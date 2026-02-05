@@ -89,17 +89,37 @@ const isCollapse = ref(false)
 
 // 获取菜单路由
 const menuRoutes = computed(() => {
-  return router.getRoutes().filter(route => {
+  // 获取所有顶级路由(component 为 Layout 的路由)
+  const topRoutes = router.getRoutes().filter(route => {
+    // 跳过隐藏的路由
     if (route.meta?.hidden) return false
-    if (route.path === '/' || route.path.startsWith('/system')) {
-      // 检查权限
-      const permission = route.meta?.permission as string
+    
+    // 只要顶级路由(路径为 / 或者有 children 的路由)
+    return (route.path === '/' || route.path === '/system') && route.children && route.children.length > 0
+  })
+
+  // 过滤子路由的权限
+  return topRoutes.map(route => {
+    if (!route.children || route.children.length === 0) {
+      return route
+    }
+
+    // 过滤有权限的子路由
+    const filteredChildren = route.children.filter(child => {
+      const permission = child.meta?.permission as string
       if (permission) {
         return userStore.hasPermission(permission) || userStore.hasPermission('*:*:*')
       }
       return true
+    })
+
+    return {
+      ...route,
+      children: filteredChildren
     }
-    return false
+  }).filter(route => {
+    // 如果父路由的所有子路由都没权限,则不显示该父路由
+    return route.children && route.children.length > 0
   })
 })
 

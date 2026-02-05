@@ -8,11 +8,22 @@ interface UserState {
 }
 
 export const useUserStore = defineStore('user', {
-  state: (): UserState => ({
-    token: localStorage.getItem('token') || '',
-    userInfo: null,
-    permissions: [],
-  }),
+  state: (): UserState => {
+    const userInfoStr = localStorage.getItem('userInfo')
+    let userInfo: UserInfo | null = null
+    if (userInfoStr) {
+      try {
+        userInfo = JSON.parse(userInfoStr)
+      } catch (e) {
+        console.error('Failed to parse userInfo from localStorage', e)
+      }
+    }
+    return {
+      token: localStorage.getItem('token') || '',
+      userInfo,
+      permissions: userInfo?.permissions || [],
+    }
+  },
 
   getters: {
     // 是否已登录
@@ -26,13 +37,14 @@ export const useUserStore = defineStore('user', {
     // 设置token
     setToken(token: string) {
       this.token = token
-      localStorage.setItem('token', token)
+      localStorage.setItem('token', 'Bearer ' + token)
     },
 
     // 设置用户信息
     setUserInfo(userInfo: UserInfo) {
       this.userInfo = userInfo
       this.permissions = userInfo.permissions || []
+      localStorage.setItem('userInfo', JSON.stringify(userInfo))
     },
 
     // 登录
