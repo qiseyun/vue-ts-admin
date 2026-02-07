@@ -5,16 +5,16 @@ import {ElMessage} from 'element-plus'
 // 核心页面
 const Layout = () => import('@/layout/index.vue')
 const ERROR_404 = () => import('@/views/error/404.vue')
-const Login = () => import('@/views/login/index.vue')
-const Redirect = () => import('@/views/redirect/index.vue')
+const Login = () => import('@/views/login/login_index.vue')
+const Redirect = () => import('@/views/redirect/redirect_index.vue')
 // 控制台
-const Dashboard = () => import('@/views/dashboard/index.vue')
+const Dashboard = () => import('@/views/dashboard/dashboard_index.vue')
 // 权限管理
-const User = () => import('@/views/system/user/index.vue')
-const Role = () => import('@/views/system/role/index.vue')
-const Menu = () => import('@/views/system/menu/index.vue')
+const User = () => import('@/views/system/sys_user/sys_user_index.vue')
+const Role = () => import('@/views/system/sys_role/sys_role_index.vue')
+const Menu = () => import('@/views/system/sys_menu/sys_menu_index.vue')
 // 系统管理
-const Setting = () => import('@/views/system/setting/index.vue')
+const Setting = () => import('@/views/system/sys_config/sys_config_index.vue')
 
 
 // 路由配置
