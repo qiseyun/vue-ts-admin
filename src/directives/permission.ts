@@ -1,5 +1,5 @@
-import type { Directive, DirectiveBinding } from 'vue'
-import { useUserStore } from '@/store/user'
+import type {Directive, DirectiveBinding} from 'vue'
+import {useUserStore} from '@/store/user'
 
 /**
  * 权限指令
@@ -8,7 +8,7 @@ import { useUserStore } from '@/store/user'
  */
 export const permission: Directive = {
   mounted(el: HTMLElement, binding: DirectiveBinding) {
-    const { value } = binding
+    const {value} = binding
     const userStore = useUserStore()
     if (value) {
       let hasPermission = false
@@ -34,7 +34,7 @@ export const permission: Directive = {
  */
 export const role: Directive = {
   mounted(el: HTMLElement, binding: DirectiveBinding) {
-    const { value } = binding
+    const {value} = binding
     const userStore = useUserStore()
 
     if (value && userStore.userInfo) {

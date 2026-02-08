@@ -11,10 +11,10 @@
       </template>
 
       <el-table :data="tableData" border stripe>
-        <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column prop="roleName" label="角色名称" />
-        <el-table-column prop="roleKey" label="角色标识" />
-        <el-table-column prop="description" label="描述" />
+        <el-table-column prop="id" label="ID" width="80"/>
+        <el-table-column prop="roleName" label="角色名称"/>
+        <el-table-column prop="roleKey" label="角色标识"/>
+        <el-table-column prop="description" label="描述"/>
         <el-table-column label="状态" width="100">
           <template #default="{ row }">
             <el-tag :type="row.status === 1 ? 'success' : 'danger'">
@@ -22,36 +22,36 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="createTime" label="创建时间" width="180" />
+        <el-table-column prop="createTime" label="创建时间" width="180"/>
         <el-table-column label="操作" width="250" fixed="right">
           <template #default="{ row }">
             <el-button
-              v-permission="'system:role:edit'"
-              type="primary"
-              size="small"
-              link
-              icon="Edit"
-              @click="handleEdit(row)"
+                v-permission="'system:role:edit'"
+                type="primary"
+                size="small"
+                link
+                icon="Edit"
+                @click="handleEdit(row)"
             >
               编辑
             </el-button>
             <el-button
-              v-permission="'system:role:permission'"
-              type="warning"
-              size="small"
-              link
-              icon="Key"
-              @click="handlePermission(row)"
+                v-permission="'system:role:permission'"
+                type="warning"
+                size="small"
+                link
+                icon="Key"
+                @click="handlePermission(row)"
             >
               权限
             </el-button>
             <el-button
-              v-permission="'system:role:delete'"
-              type="danger"
-              size="small"
-              link
-              icon="Delete"
-              @click="handleDelete(row)"
+                v-permission="'system:role:delete'"
+                type="danger"
+                size="small"
+                link
+                icon="Delete"
+                @click="handleDelete(row)"
             >
               删除
             </el-button>
@@ -63,8 +63,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import {ref, onMounted} from 'vue'
+import {ElMessage, ElMessageBox} from 'element-plus'
 
 interface Role {
   id: number

@@ -6,7 +6,7 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import App from './App.vue'
 import router from './router'
 import pinia from './store'
-import setupDirectives from './directives'
+import setupDirectives from './directives/directives_index.ts'
 
 const app = createApp(App)
 

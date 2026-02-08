@@ -11,11 +11,11 @@
       </template>
 
       <el-table :data="tableData" border row-key="id" default-expand-all>
-        <el-table-column prop="title" label="菜单名称" width="200" />
-        <el-table-column prop="path" label="路由路径" />
-        <el-table-column prop="component" label="组件路径" />
-        <el-table-column prop="icon" label="图标" width="100" />
-        <el-table-column prop="sort" label="排序" width="80" />
+        <el-table-column prop="title" label="菜单名称" width="200"/>
+        <el-table-column prop="path" label="路由路径"/>
+        <el-table-column prop="component" label="组件路径"/>
+        <el-table-column prop="icon" label="图标" width="100"/>
+        <el-table-column prop="sort" label="排序" width="80"/>
         <el-table-column label="状态" width="100">
           <template #default="{ row }">
             <el-tag :type="row.status === 1 ? 'success' : 'danger'">
@@ -26,22 +26,22 @@
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="{ row }">
             <el-button
-              v-permission="'system:menu:edit'"
-              type="primary"
-              size="small"
-              link
-              icon="Edit"
-              @click="handleEdit(row)"
+                v-permission="'system:menu:edit'"
+                type="primary"
+                size="small"
+                link
+                icon="Edit"
+                @click="handleEdit(row)"
             >
               编辑
             </el-button>
             <el-button
-              v-permission="'system:menu:delete'"
-              type="danger"
-              size="small"
-              link
-              icon="Delete"
-              @click="handleDelete(row)"
+                v-permission="'system:menu:delete'"
+                type="danger"
+                size="small"
+                link
+                icon="Delete"
+                @click="handleDelete(row)"
             >
               删除
             </el-button>
