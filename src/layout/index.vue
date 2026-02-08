@@ -51,7 +51,7 @@
         <div class="header-right">
           <el-dropdown @command="handleCommand">
             <div class="user-info">
-              <el-avatar src="./miku.jfif" />
+              <el-avatar src="./miku.png" />
               <span class="username">{{ userStore.userInfo?.realName }}</span>
             </div>
             <template #dropdown>
@@ -269,7 +269,7 @@ const handleCommand = async (command: string) => {
 
   .main-content {
     background-color: #f0f2f5;
-    padding: 1px;
+    padding: 10px;
     overflow-y: auto;
   }
 }

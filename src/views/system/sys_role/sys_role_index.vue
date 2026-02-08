@@ -308,7 +308,6 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .role-container {
-  padding: 20px;
 
   .card-header {
     display: flex;

@@ -340,9 +340,6 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-.setting-container {
-  padding: 20px;
-}
 
 .card-header {
   display: flex;
