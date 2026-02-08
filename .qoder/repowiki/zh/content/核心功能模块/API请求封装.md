@@ -4,9 +4,9 @@
 **本文档引用的文件**
 - [src/utils/request.ts](file://src/utils/request.ts)
 - [src/api/auth.ts](file://src/api/auth.ts)
-- [src/store/user.ts](file://src/store/user.ts)
-- [src/types/index.ts](file://src/types/index.ts)
-- [src/router/index.ts](file://src/router/index.ts)
+- [src/store/sys_user.ts](file://src/store/sys_user.ts)
+- [src/types/auth.ts](file://src/types/auth.ts)
+- [src/router/auth.ts](file://src/router/auth.ts)
 - [src/views/login/index.vue](file://src/views/login/index.vue)
 - [src/main.ts](file://src/main.ts)
 - [package.json](file://package.json)
@@ -37,14 +37,14 @@ graph TB
 subgraph "核心模块"
 Utils[utils/request.ts<br/>请求封装]
 API[api/auth.ts<br/>认证API]
-Store[store/user.ts<br/>用户状态管理]
+Store[store/sys_user.ts<br/>用户状态管理]
 end
 subgraph "类型定义"
-Types[types/index.ts<br/>接口类型]
+Types[types/auth.ts<br/>接口类型]
 end
 subgraph "视图层"
 Login[views/login/index.vue<br/>登录页面]
-Router[router/index.ts<br/>路由配置]
+Router[router/auth.ts<br/>路由配置]
 end
 subgraph "应用入口"
 Main[main.ts<br/>应用初始化]
@@ -61,14 +61,14 @@ Package --> Utils
 **图表来源**
 - [src/utils/request.ts](file://src/utils/request.ts#L1-L102)
 - [src/api/auth.ts](file://src/api/auth.ts#L1-L18)
-- [src/store/user.ts](file://src/store/user.ts#L1-L68)
+- [src/store/sys_user.ts](file://src/store/user.ts#L1-L68)
 
 **章节来源**
 - [src/utils/request.ts](file://src/utils/request.ts#L1-L102)
 - [src/api/auth.ts](file://src/api/auth.ts#L1-L18)
-- [src/store/user.ts](file://src/store/user.ts#L1-L68)
-- [src/types/index.ts](file://src/types/index.ts#L1-L45)
-- [src/router/index.ts](file://src/router/index.ts#L1-L123)
+- [src/store/sys_user.ts](file://src/store/user.ts#L1-L68)
+- [src/types/auth.ts](file://src/types/index.ts#L1-L45)
+- [src/router/auth.ts](file://src/router/index.ts#L1-L123)
 - [src/views/login/index.vue](file://src/views/login/index.vue#L1-L257)
 - [src/main.ts](file://src/main.ts#L1-L27)
 - [package.json](file://package.json#L1-L38)
@@ -114,7 +114,7 @@ Package --> Utils
 
 **章节来源**
 - [src/api/auth.ts](file://src/api/auth.ts#L1-L18)
-- [src/types/index.ts](file://src/types/index.ts#L19-L30)
+- [src/types/auth.ts](file://src/types/index.ts#L19-L30)
 
 ### 用户状态管理
 
@@ -132,8 +132,8 @@ Pinia状态管理提供了完整的用户认证状态管理：
 - 权限检查方法：`hasPermission()`, `hasAnyPermission()`, `hasAllPermissions()`
 
 **章节来源**
-- [src/store/user.ts](file://src/store/user.ts#L4-L8)
-- [src/store/user.ts](file://src/store/user.ts#L25-L65)
+- [src/store/sys_user.ts](file://src/store/user.ts#L4-L8)
+- [src/store/sys_user.ts](file://src/store/user.ts#L25-L65)
 
 ## 架构概览
 
@@ -171,8 +171,8 @@ Request --> Types
 **图表来源**
 - [src/utils/request.ts](file://src/utils/request.ts#L1-L102)
 - [src/api/auth.ts](file://src/api/auth.ts#L1-L18)
-- [src/store/user.ts](file://src/store/user.ts#L1-L68)
-- [src/router/index.ts](file://src/router/index.ts#L1-L123)
+- [src/store/sys_user.ts](file://src/store/user.ts#L1-L68)
+- [src/router/auth.ts](file://src/router/index.ts#L1-L123)
 
 ## 详细组件分析
 
@@ -299,11 +299,11 @@ stateDiagram-v2
 ```
 
 **图表来源**
-- [src/store/user.ts](file://src/store/user.ts#L27-L30)
+- [src/store/sys_user.ts](file://src/store/user.ts#L27-L30)
 - [src/utils/request.ts](file://src/utils/request.ts#L40-L43)
 
 **章节来源**
-- [src/store/user.ts](file://src/store/user.ts#L27-L30)
+- [src/store/sys_user.ts](file://src/store/user.ts#L27-L30)
 - [src/utils/request.ts](file://src/utils/request.ts#L40-L43)
 
 ### API调用最佳实践
@@ -335,7 +335,7 @@ try {
 
 **章节来源**
 - [src/api/auth.ts](file://src/api/auth.ts#L5-L17)
-- [src/types/index.ts](file://src/types/index.ts#L26-L30)
+- [src/types/auth.ts](file://src/types/index.ts#L26-L30)
 
 ## 依赖关系分析
 

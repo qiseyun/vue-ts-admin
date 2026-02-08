@@ -1,5 +1,6 @@
 import {post, get} from '@/utils/request'
-import type {LoginForm, LoginResponse, UserInfo, ApiResponse} from '@/types'
+import type {LoginForm, LoginResponse, UserInfo} from '@/types/auth.ts'
+import type {ApiResponse} from '@/types/common_types.ts'
 
 // 登录接口
 export function login(data: LoginForm) {

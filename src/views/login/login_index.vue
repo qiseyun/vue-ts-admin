@@ -47,7 +47,7 @@ import {reactive, ref, onMounted, onUnmounted} from 'vue'
 import {useRouter} from 'vue-router'
 import {ElMessage, type FormInstance, type FormRules} from 'element-plus'
 import {useUserStore} from '@/store/user'
-import type {LoginForm} from '@/types'
+import type {LoginForm} from '@/types/auth.ts'
 import {login as loginApi} from '@/api/auth'
 
 const router = useRouter()

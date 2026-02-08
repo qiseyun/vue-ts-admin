@@ -65,7 +65,7 @@
           v-model:page-size="pagination.size"
           :total="pagination.total"
           :page-sizes="[10, 20, 50, 100]"
-          layout="total, sizes, prev, pager, next, jumper"
+          layout="sizes, prev, pager, next, jumper"
           style="margin-top: 20px; justify-content: flex-end"
           @size-change="handleSearch"
           @current-change="handleSearch"
@@ -139,12 +139,10 @@ import {
   getUserList,
   addUser,
   updateUser,
-  deleteUser,
-  type SysUserListVo,
-  type AddSysUserEvt,
-  type UpdateSysUserEvt,
-  type IdEvt
-} from '@/api/user'
+  deleteUser
+} from '@/api/sys_user.ts'
+import type {SysUserListVo, AddSysUserEvt, UpdateSysUserEvt} from "@/types/sys_user.ts";
+import type {IdNumberRequest} from "@/types/common_types.ts";
 
 interface UserQuery {
   phone?: string
@@ -269,7 +267,6 @@ const handleEdit = (row: SysUserListVo) => {
   isEdit.value = true
   dialogTitle.value = '编辑用户'
   dialogVisible.value = true
-
   // 填充表单数据
   setTimeout(() => {
     userFormData.value = {
@@ -286,7 +283,6 @@ const handleEdit = (row: SysUserListVo) => {
 const handleSubmit = async () => {
   // 验证表单
   await userFormRef.value.validate()
-
   try {
     if (isEdit.value) {
       // 编辑用户
@@ -297,7 +293,6 @@ const handleSubmit = async () => {
       await addUser(userFormData.value as AddSysUserEvt)
       ElMessage.success('新增用户成功')
     }
-
     dialogVisible.value = false
     await fetchUserList()
   } catch (error: any) {
@@ -316,7 +311,7 @@ const handleDelete = async (row: SysUserListVo) => {
     })
 
     // 调用删除API
-    const deleteParams: IdEvt = {id: row.id}
+    const deleteParams: IdNumberRequest = {id: row.id}
     await deleteUser(deleteParams)
     ElMessage.success('删除用户成功')
 
@@ -324,8 +319,7 @@ const handleDelete = async (row: SysUserListVo) => {
     if (tableData.value.length === 1 && pagination.value.page > 1) {
       pagination.value.page--
     }
-
-    fetchUserList()
+    await fetchUserList()
   } catch (error: any) {
     if (error !== 'cancel') {
       ElMessage.error(error.message || '删除用户失败')

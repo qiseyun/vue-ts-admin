@@ -20,24 +20,3 @@ export interface LoginResponse {
   accessToken: string
   expiresTime: number
 }
-
-// API响应类型
-export interface ApiResponse<T = any> {
-  code: number
-  msg: string
-  data: T
-}
-
-// 菜单项类型
-export interface MenuItem {
-  id: number
-  path: string
-  name: string
-  title: string
-  icon?: string
-  component?: string
-  redirect?: string
-  children?: MenuItem[]
-  hidden?: boolean
-  permission?: string
-}

@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia'
-import type {UserInfo} from '@/types'
+import type {UserInfo} from '@/types/auth.ts'
 import {getUserInfo, getPermissions, logout as logoutApi} from '@/api/auth'
 
 interface UserState {
