@@ -2,8 +2,8 @@
   <el-container class="layout-container">
     <el-aside :width="isCollapse ? '64px' : '220px'" class="sidebar">
       <div class="logo">
-        <img v-if="!isCollapse" src="/vite.svg" alt="Logo" />
-        <span v-if="!isCollapse">管理后台</span>
+        <img src="/vite.svg" alt="Logo" />
+        <span v-show="!isCollapse">管理后台</span>
       </div>
       <el-menu
         :default-active="activeMenu"
@@ -181,10 +181,18 @@ const handleCommand = async (command: string) => {
       color: #fff;
       font-size: 18px;
       font-weight: bold;
+      transition: all 0.3s;
+      overflow: hidden;
 
       img {
         width: 32px;
         height: 32px;
+        flex-shrink: 0;
+      }
+
+      span {
+        white-space: nowrap;
+        transition: opacity 0.3s;
       }
     }
 
@@ -261,7 +269,7 @@ const handleCommand = async (command: string) => {
 
   .main-content {
     background-color: #f0f2f5;
-    padding: 20px;
+    padding: 1px;
     overflow-y: auto;
   }
 }
