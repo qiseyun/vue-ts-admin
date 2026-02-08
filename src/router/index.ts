@@ -158,10 +158,23 @@ const router = createRouter({
 
 
 // 路由守卫
-router.beforeEach((to, _from, next) => {
+router.beforeEach(async (to, _from, next) => {
   const userStore = useUserStore()
+
   // 设置页面标题
   document.title = `${to.meta.title || '管理后台'} - Vue Admin`
+
+  // 如果是首次访问或刚登录，初始化用户信息
+  if (to.path !== '/login') {
+    try {
+      await userStore.initUserInfo()
+    } catch (error) {
+      console.error('初始化用户信息失败:', error)
+      next('/login')
+      return
+    }
+  }
+
   // 判断是否需要登录
   if (to.path !== '/login') {
     if (!userStore.isLogin) {

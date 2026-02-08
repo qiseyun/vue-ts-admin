@@ -157,5 +157,24 @@ export const useUserStore = defineStore('user', {
     hasAllPermissions(permissions: string[]): boolean {
       return permissions.every(permission => this.permissions.includes(permission))
     },
+
+    // 初始化用户信息（页面刷新时调用）
+    async initUserInfo() {
+      if (this.isLogin && this.token) {
+        try {
+          // 尝试获取最新的用户信息
+          await this.fetchUserInfo()
+          // 尝试获取最新的权限列表
+          await this.fetchPermissions()
+          return true
+        } catch (error) {
+          console.error('初始化用户信息失败:', error)
+          // 如果获取失败，清除本地存储并重定向到登录页
+          await this.logout()
+          return false
+        }
+      }
+      return false
+    },
   },
 })
