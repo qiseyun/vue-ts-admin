@@ -15,6 +15,7 @@ const Role = () => import('@/views/system/sys_role/sys_role_index.vue')
 const Menu = () => import('@/views/system/sys_menu/sys_menu_index.vue')
 // 系统管理
 const Setting = () => import('@/views/system/sys_config/sys_config_index.vue')
+const Region = () => import('@/views/system/sys_region/sys_region_index.vue')
 
 
 // 路由配置
@@ -144,6 +145,16 @@ const routes: RouteRecordRaw[] = [
           title: '系统设置',
           icon: 'Setting',
           permission: 'system:config:page',
+        },
+      },
+      {
+        path: '/system/region',
+        name: 'Region',
+        component: Region,
+        meta: {
+          title: '地区管理',
+          icon: 'Location',
+          permission: 'system:region:page',
         },
       },
     ],
