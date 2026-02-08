@@ -10,16 +10,20 @@
         </div>
       </template>
 
-      <el-table :data="tableData" border row-key="id" default-expand-all>
-        <el-table-column prop="title" label="菜单名称" width="200"/>
-        <el-table-column prop="path" label="路由路径"/>
-        <el-table-column prop="component" label="组件路径"/>
-        <el-table-column prop="icon" label="图标" width="100"/>
-        <el-table-column prop="sort" label="排序" width="80"/>
-        <el-table-column label="状态" width="100">
+      <el-table :data="tableData" border row-key="id">
+        <el-table-column prop="name" label="菜单名称" width="200"/>
+        <el-table-column prop="permission" label="权限标识"/>
+        <el-table-column label="菜单类型" width="100">
           <template #default="{ row }">
-            <el-tag :type="row.status === 1 ? 'success' : 'danger'">
-              {{ row.status === 1 ? '显示' : '隐藏' }}
+            <el-tag :type="row.type === 0 ? 'primary' : row.type === 1 ? 'success' : 'warning'">
+              {{ row.type === 0 ? '页面' : row.type === 1 ? '组件' : '接口' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="权限状态" width="100">
+          <template #default="{ row }">
+            <el-tag :type="row.keepAlive === '0' ? 'success' : 'info'">
+              {{ row.keepAlive === '0' ? '开启' : '关闭' }}
             </el-tag>
           </template>
         </el-table-column>
@@ -55,84 +59,37 @@
 <script setup lang="ts">
 import {onMounted, ref} from 'vue'
 import {ElMessage, ElMessageBox} from 'element-plus'
+import {getMenuTree} from '@/api/sys_menu'
+import type {SysMenuListVo} from '@/types/sys_menu'
 
-interface Menu {
-  id: number
-  title: string
-  path: string
-  component: string
-  icon: string
-  sort: number
-  status: number
-  children?: Menu[]
+// 使用后端返回的数据结构
+interface MenuItem extends SysMenuListVo {
+  // 可以在这里添加前端需要的额外字段
 }
 
-const tableData = ref<Menu[]>([])
+const tableData = ref<MenuItem[]>([])
 
-// 模拟获取菜单列表
-const getMenuList = () => {
-  // 模拟数据
-  tableData.value = [
-    {
-      id: 1,
-      title: '首页',
-      path: '/dashboard',
-      component: 'views/dashboard/index',
-      icon: 'HomeFilled',
-      sort: 1,
-      status: 1,
-    },
-    {
-      id: 2,
-      title: '系统管理',
-      path: '/system',
-      component: 'Layout',
-      icon: 'Setting',
-      sort: 2,
-      status: 1,
-      children: [
-        {
-          id: 3,
-          title: '用户管理',
-          path: '/system/user',
-          component: 'views/system/user/index',
-          icon: 'User',
-          sort: 1,
-          status: 1,
-        },
-        {
-          id: 4,
-          title: '角色管理',
-          path: '/system/role',
-          component: 'views/system/role/index',
-          icon: 'Avatar',
-          sort: 2,
-          status: 1,
-        },
-        {
-          id: 5,
-          title: '菜单管理',
-          path: '/system/menu',
-          component: 'views/system/menu/index',
-          icon: 'Menu',
-          sort: 3,
-          status: 1,
-        },
-      ],
-    },
-  ]
+// 获取菜单列表
+const getMenuList = async () => {
+  try {
+    const res = await getMenuTree({id: 0})
+    tableData.value = res.data || []
+  } catch (error) {
+    console.error('获取菜单列表失败:', error)
+    ElMessage.error('获取菜单列表失败')
+  }
 }
 
 const handleAdd = () => {
   ElMessage.info('新增菜单功能待开发')
 }
 
-const handleEdit = (row: Menu) => {
-  ElMessage.info(`编辑菜单: ${row.title}`)
+const handleEdit = (row: MenuItem) => {
+  ElMessage.info(`编辑菜单: ${row.name}`)
 }
 
-const handleDelete = (row: Menu) => {
-  ElMessageBox.confirm(`确定要删除菜单 ${row.title} 吗？`, '提示', {
+const handleDelete = (row: MenuItem) => {
+  ElMessageBox.confirm(`确定要删除菜单 ${row.name} 吗？`, '提示', {
     type: 'warning',
   }).then(() => {
     ElMessage.success('删除成功')
