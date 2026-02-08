@@ -1,6 +1,6 @@
-import request from '@/utils/request'
-import type {AddSysUserEvt, UpdateSysUserEvt} from "@/types/sys_user.ts";
-import type {IdNumberRequest} from "@/types/common_types.ts";
+import {get, post} from '@/utils/request'
+import type {AddSysUserEvt, SysUserListVo, UpdateSysUserEvt} from "@/types/sys_user.ts";
+import type {ApiResponse, IdNumberRequest} from "@/types/common_types.ts";
 
 // 获取用户列表
 export const getUserList = (params: {
@@ -8,36 +8,20 @@ export const getUserList = (params: {
   current: number
   size: number
 }) => {
-  return request({
-    url: '/sysUser/list',
-    method: 'get',
-    params
-  })
+  return get<ApiResponse<SysUserListVo[]>>('/sysUser/list', params)
 }
 
 // 新增用户
-export const addUser = (data: AddSysUserEvt) => {
-  return request({
-    url: '/sysUser/add',
-    method: 'post',
-    data
-  })
+export const addSysUser = (data: AddSysUserEvt) => {
+  return post<ApiResponse>('/sysUser/add', data)
 }
 
 // 更新用户
-export const updateUser = (data: UpdateSysUserEvt) => {
-  return request({
-    url: '/sysUser/update',
-    method: 'post',
-    data
-  })
+export const updateSysUser = (data: UpdateSysUserEvt) => {
+  return post<ApiResponse>('/sysUser/update', data)
 }
 
 // 删除用户
-export const deleteUser = (data: IdNumberRequest) => {
-  return request({
-    url: '/sysUser/del',
-    method: 'post',
-    data
-  })
+export const deleteSysUser = (data: IdNumberRequest) => {
+  return post<ApiResponse>('/sysUser/del', data)
 }

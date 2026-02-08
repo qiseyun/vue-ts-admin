@@ -1,43 +1,28 @@
-import request from '@/utils/request'
+import {get, post} from '@/utils/request'
 import type {
   SysConfigQuery,
   AddSysConfigRequest,
-  UpdateSysConfigRequest
+  UpdateSysConfigRequest,
+  SysConfigListVo
 } from '@/types/sys_config.ts'
-import type {IdNumberRequest} from '@/types/common_types.ts'
+import type {ApiResponse, IdNumberRequest} from '@/types/common_types.ts'
 
 // 获取系统配置列表
 export const getSysConfigList = (params: SysConfigQuery) => {
-  return request({
-    url: '/sysConfig/list',
-    method: 'GET',
-    params
-  })
+  return get<ApiResponse<SysConfigListVo[]>>('/sysConfig/list', params)
 }
 
 // 添加系统配置
 export const addSysConfig = (data: AddSysConfigRequest) => {
-  return request({
-    url: '/sysConfig/add',
-    method: 'POST',
-    data
-  })
+  return post<ApiResponse>('/sysConfig/add', data)
 }
 
 // 更新系统配置
 export const updateSysConfig = (data: UpdateSysConfigRequest) => {
-  return request({
-    url: '/sysConfig/update',
-    method: 'POST',
-    data
-  })
+  return post<ApiResponse>('/sysConfig/update', data)
 }
 
 // 删除系统配置
 export const deleteSysConfig = (data: IdNumberRequest) => {
-  return request({
-    url: '/sysConfig/del',
-    method: 'POST',
-    data
-  })
+  return post<ApiResponse>('/sysConfig/del', data)
 }

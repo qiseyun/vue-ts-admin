@@ -137,9 +137,9 @@ import {ref, onMounted} from 'vue'
 import {ElMessage, ElMessageBox, ElDialog, ElForm, ElFormItem, ElInput} from 'element-plus'
 import {
   getUserList,
-  addUser,
-  updateUser,
-  deleteUser
+  addSysUser,
+  updateSysUser,
+  deleteSysUser
 } from '@/api/sys_user.ts'
 import type {SysUserListVo, AddSysUserEvt, UpdateSysUserEvt} from "@/types/sys_user.ts";
 import type {IdNumberRequest} from "@/types/common_types.ts";
@@ -286,11 +286,11 @@ const handleSubmit = async () => {
   try {
     if (isEdit.value) {
       // 编辑用户
-      await updateUser(userFormData.value as UpdateSysUserEvt)
+      await updateSysUser(userFormData.value as UpdateSysUserEvt)
       ElMessage.success('编辑用户成功')
     } else {
       // 新增用户
-      await addUser(userFormData.value as AddSysUserEvt)
+      await addSysUser(userFormData.value as AddSysUserEvt)
       ElMessage.success('新增用户成功')
     }
     dialogVisible.value = false
@@ -312,7 +312,7 @@ const handleDelete = async (row: SysUserListVo) => {
 
     // 调用删除API
     const deleteParams: IdNumberRequest = {id: row.id}
-    await deleteUser(deleteParams)
+    await deleteSysUser(deleteParams)
     ElMessage.success('删除用户成功')
 
     // 如果当前页只剩一条数据且不是第一页，返回上一页

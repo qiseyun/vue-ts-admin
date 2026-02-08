@@ -120,8 +120,8 @@
         </el-form-item>
         <el-form-item label="是否锁定" prop="isLock">
           <el-radio-group v-model="form.isLock">
-            <el-radio :label="0">否</el-radio>
-            <el-radio :label="1">是</el-radio>
+            <el-radio :value="0">否</el-radio>
+            <el-radio :value="1">是</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
@@ -209,10 +209,10 @@ const fetchList = async () => {
     }
     params.configName = searchForm.value.configName
     params.configKey = searchForm.value.configKey
-    const response = await getSysConfigList(params)
-    tableData.value = response.data || []
+    const res = await getSysConfigList(params)
+    tableData.value = res.data
     // 根据每页数量判断是否有下一页
-    pagination.value.total = tableData.value.length === pagination.value.size
+    pagination.value.total = res.data.length === pagination.value.size
         ? (pagination.value.page + 1) * pagination.value.size
         : (pagination.value.page - 1) * pagination.value.size + tableData.value.length
   } catch (err) {
@@ -294,8 +294,8 @@ const handleDelete = async (row: SysConfigListVo) => {
       type: 'warning'
     })
     if (row.id !== undefined) {
-      await deleteSysConfig({id: row.id})
-      ElMessage.success('删除成功')
+      const res = await deleteSysConfig({id: row.id})
+      ElMessage.success(res.msg || '删除成功')
       await fetchList()
     }
   } catch (error: any) {
@@ -313,12 +313,12 @@ const handleSubmit = async () => {
   try {
     if (isEdit.value) {
       // 编辑
-      await updateSysConfig(form.value as UpdateSysConfigRequest)
-      ElMessage.success('编辑成功')
+      const res = await updateSysConfig(form.value as UpdateSysConfigRequest)
+      ElMessage.success(res.msg || '编辑成功')
     } else {
       // 新增
-      await addSysConfig(form.value as AddSysConfigRequest)
-      ElMessage.success('新增成功')
+      const res = await addSysConfig(form.value as AddSysConfigRequest)
+      ElMessage.success(res.msg || '新增成功')
     }
     dialogVisible.value = false
     await fetchList()
