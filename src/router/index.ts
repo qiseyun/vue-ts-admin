@@ -100,7 +100,7 @@ const routes: RouteRecordRaw[] = [
         meta: {
           title: '用户管理',
           icon: 'User',
-          permission: 'system:user:list',
+          permission: 'system:user:page',
         },
       },
       {
@@ -110,7 +110,7 @@ const routes: RouteRecordRaw[] = [
         meta: {
           title: '角色管理',
           icon: 'Avatar',
-          permission: 'system:role:list',
+          permission: 'system:role:page',
         },
       },
       {
@@ -118,9 +118,9 @@ const routes: RouteRecordRaw[] = [
         name: 'Menu',
         component: Menu,
         meta: {
-          title: '菜单管理',
+          title: '权限管理',
           icon: 'Menu',
-          permission: 'system:menu:list',
+          permission: 'system:menu:page',
         },
       },
     ],
@@ -143,6 +143,7 @@ const routes: RouteRecordRaw[] = [
         meta: {
           title: '系统设置',
           icon: 'Setting',
+          permission: 'system:config:page',
         },
       },
     ],

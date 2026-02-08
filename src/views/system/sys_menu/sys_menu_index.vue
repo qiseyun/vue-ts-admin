@@ -3,7 +3,7 @@
     <el-card>
       <template #header>
         <div class="card-header">
-          <span>菜单管理</span>
+          <span>权限管理</span>
           <el-button v-permission="'system:menu:add'" type="primary" icon="Plus" @click="handleAdd">
             新增菜单
           </el-button>

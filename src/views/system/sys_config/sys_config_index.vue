@@ -53,6 +53,7 @@
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="{ row }">
             <el-button
+                v-permission="'system:config:edit'"
                 type="primary"
                 size="small"
                 link
@@ -62,6 +63,7 @@
               编辑
             </el-button>
             <el-button
+                v-permission="'system:config:delete'"
                 type="danger"
                 size="small"
                 link
