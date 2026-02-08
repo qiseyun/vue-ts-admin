@@ -19,7 +19,6 @@
           <el-button icon="Refresh" @click="handleReset">重置</el-button>
         </el-form-item>
       </el-form>
-
       <el-table :data="tableData" border stripe>
         <el-table-column prop="id" label="ID" width="60"/>
         <el-table-column prop="username" label="用户名" width="120"/>
@@ -27,7 +26,7 @@
         <el-table-column prop="phone" label="手机号" width="120"/>
         <el-table-column prop="email" label="邮箱" width="180"/>
         <el-table-column prop="deptId" label="部门ID" width="60"/>
-        <el-table-column label="状态" width="60">
+        <el-table-column label="状态" width="70">
           <template #default="{ row }">
             <el-tag :type="row.lockFlag === 0 ? 'success' : 'danger'">
               {{ row.lockFlag === 0 ? '正常' : '锁定' }}
@@ -83,7 +82,7 @@
       <el-form
           ref="userFormRef"
           :model="userFormData"
-          :rules="userFormRules"
+          :rules="isEdit ? editUserFormRules : userFormRules"
           label-width="100px"
       >
         <el-form-item label="用户名" prop="username">
@@ -109,7 +108,7 @@
         </el-form-item>
         <el-form-item label="密码" prop="password" v-if="!isEdit">
           <el-input
-              v-model="userFormData.password"
+              v-model="(userFormData as AddSysUserEvt).password"
               type="password"
               placeholder="请输入密码"
               show-password
@@ -136,7 +135,16 @@
 <script setup lang="ts">
 import {ref, onMounted} from 'vue'
 import {ElMessage, ElMessageBox, ElDialog, ElForm, ElFormItem, ElInput} from 'element-plus'
-import {getUserList, addUser, type SysUserListVo, type AddSysUserEvt} from '@/api/user'
+import {
+  getUserList,
+  addUser,
+  updateUser,
+  deleteUser,
+  type SysUserListVo,
+  type AddSysUserEvt,
+  type UpdateSysUserEvt,
+  type IdEvt
+} from '@/api/user'
 
 interface UserQuery {
   phone?: string
@@ -166,7 +174,10 @@ const fetchUserList = async () => {
     params.phone = searchForm.value.phone
     const response = await getUserList(params)
     tableData.value = response.data || []
-    pagination.value.total = response.data.total
+    // 根据每页数量判断是否有下一页
+    pagination.value.total = tableData.value.length === pagination.value.size
+        ? (pagination.value.page + 1) * pagination.value.size
+        : (pagination.value.page - 1) * pagination.value.size + tableData.value.length
   } catch (error) {
     console.error('获取用户列表失败:', error)
     ElMessage.error('获取用户列表失败')
@@ -188,7 +199,7 @@ const dialogTitle = ref('')
 const isEdit = ref(false)
 const userFormRef = ref()
 
-const userFormData = ref<AddSysUserEvt>({
+const userFormData = ref<AddSysUserEvt | UpdateSysUserEvt>({
   username: '',
   telephone: '',
   password: '',
@@ -212,6 +223,24 @@ const userFormRules = {
   password: [
     {required: true, message: '请输入密码', trigger: 'blur'},
     {min: 6, max: 20, message: '密码长度在6-20个字符之间', trigger: 'blur'}
+  ],
+  email: [
+    {pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, message: '请输入正确的邮箱格式', trigger: 'blur'}
+  ]
+}
+
+const editUserFormRules = {
+  username: [
+    {required: true, message: '请输入用户名', trigger: 'blur'},
+    {min: 3, max: 20, message: '用户名长度在3-20个字符之间', trigger: 'blur'}
+  ],
+  realName: [
+    {required: true, message: '请输入真实姓名', trigger: 'blur'},
+    {min: 2, max: 10, message: '真实姓名长度在2-10个字符之间', trigger: 'blur'}
+  ],
+  telephone: [
+    {required: true, message: '请输入手机号', trigger: 'blur'},
+    {pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号码', trigger: 'blur'}
   ],
   email: [
     {pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, message: '请输入正确的邮箱格式', trigger: 'blur'}
@@ -244,9 +273,9 @@ const handleEdit = (row: SysUserListVo) => {
   // 填充表单数据
   setTimeout(() => {
     userFormData.value = {
+      id: row.id,
       username: row.username,
       telephone: row.phone,
-      password: '', // 编辑时不显示原密码
       realName: row.realName,
       email: row.email || '',
     }
@@ -260,13 +289,12 @@ const handleSubmit = async () => {
 
   try {
     if (isEdit.value) {
-      // 编辑用户 - 这里可以添加编辑API调用（假设我们有当前编辑的用户ID）
-      ElMessage.warning('编辑用户功能待实现，当前仅支持新增用户')
-      // 如果需要编辑功能，需要传入用户ID
-      // await updateUser(currentUserId, userFormData.value)
+      // 编辑用户
+      await updateUser(userFormData.value as UpdateSysUserEvt)
+      ElMessage.success('编辑用户成功')
     } else {
       // 新增用户
-      await addUser(userFormData.value)
+      await addUser(userFormData.value as AddSysUserEvt)
       ElMessage.success('新增用户成功')
     }
 
@@ -288,11 +316,20 @@ const handleDelete = async (row: SysUserListVo) => {
     })
 
     // 调用删除API
-    // await deleteUser(row.id) // 注释掉，因为可能后端没有提供此接口
-    ElMessage.warning('删除用户功能待实现')
+    const deleteParams: IdEvt = {id: row.id}
+    await deleteUser(deleteParams)
+    ElMessage.success('删除用户成功')
+
+    // 如果当前页只剩一条数据且不是第一页，返回上一页
+    if (tableData.value.length === 1 && pagination.value.page > 1) {
+      pagination.value.page--
+    }
 
     fetchUserList()
-  } catch (error) {
+  } catch (error: any) {
+    if (error !== 'cancel') {
+      ElMessage.error(error.message || '删除用户失败')
+    }
     // 取消删除
     console.log('用户取消删除操作')
   }

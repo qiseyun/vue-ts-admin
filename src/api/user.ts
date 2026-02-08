@@ -20,6 +20,18 @@ export interface AddSysUserEvt {
   email?: string
 }
 
+export interface UpdateSysUserEvt {
+  id: number
+  username: string
+  telephone: string
+  realName: string
+  email?: string
+}
+
+export interface IdEvt {
+  id: number
+}
+
 // 获取用户列表
 export const getUserList = (params: {
   phone?: string
@@ -43,18 +55,19 @@ export const addUser = (data: AddSysUserEvt) => {
 }
 
 // 更新用户
-export const updateUser = (id: number, data: Partial<AddSysUserEvt>) => {
+export const updateUser = (data: UpdateSysUserEvt) => {
   return request({
-    url: `/sysUser/update/${id}`,
-    method: 'put',
+    url: '/sysUser/update',
+    method: 'post',
     data
   })
 }
 
 // 删除用户
-export const deleteUser = (id: number) => {
+export const deleteUser = (data: IdEvt) => {
   return request({
-    url: `/sysUser/delete/${id}`,
-    method: 'delete'
+    url: '/sysUser/del',
+    method: 'post',
+    data
   })
 }
