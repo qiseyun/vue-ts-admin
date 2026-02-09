@@ -43,7 +43,6 @@ declare module 'vue' {
     ElSubMenu: typeof import('element-plus/es')['ElSubMenu']
     ElTable: typeof import('element-plus/es')['ElTable']
     ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
-    ElTableV2: typeof import('element-plus/es')['ElTableV2']
     ElTag: typeof import('element-plus/es')['ElTag']
     ElTimeline: typeof import('element-plus/es')['ElTimeline']
     ElTimelineItem: typeof import('element-plus/es')['ElTimelineItem']

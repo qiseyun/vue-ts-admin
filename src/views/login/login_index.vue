@@ -3,7 +3,7 @@
     <canvas id="canvas" class="canvas-bg"></canvas>
     <div class="login-box">
       <div class="login-title">
-        <h2>mikuyun管理后台</h2>
+        <h2>{{ getAppTitle() }}</h2>
         <p>Vue3 + TypeScript + Element Plus</p>
       </div>
       <el-form ref="loginFormRef" :model="loginForm" :rules="rules" class="login-form">
@@ -49,6 +49,7 @@ import {ElMessage, type FormInstance, type FormRules} from 'element-plus'
 import {useUserStore} from '@/store/user'
 import type {LoginForm} from '@/types/auth.ts'
 import {login as loginApi} from '@/api/auth'
+import {getAppTitle} from "@/utils/env.ts";
 
 const router = useRouter()
 const userStore = useUserStore()

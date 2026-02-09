@@ -16,19 +16,19 @@ export function getApiBaseUrl(): string {
  * 获取应用标题
  */
 export function getAppTitle(): string {
-  return import.meta.env.VITE_APP_TITLE || 'vue-ts-admin'
+  return import.meta.env.VITE_APP_TITLE || 'mikuyun管理后台-default'
 }
 
 /**
  * 是否为生产环境
  */
 export function isProd(): boolean {
-  return import.meta.env.VITE_APP_ENV === 'production'
+  return import.meta.env.VITE_APP_ENV === 'prod'
 }
 
 /**
  * 是否为开发环境
  */
 export function isDev(): boolean {
-  return import.meta.env.VITE_APP_ENV === 'development'
+  return import.meta.env.VITE_APP_ENV === 'dev'
 }
