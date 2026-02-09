@@ -152,7 +152,7 @@ const routes: RouteRecordRaw[] = [
         name: 'Region',
         component: Region,
         meta: {
-          title: '地区管理',
+          title: '城市地区信息',
           icon: 'Location',
           permission: 'system:region:page',
         },
