@@ -2,163 +2,18 @@ import {createRouter, createWebHistory, type RouteRecordRaw} from 'vue-router'
 import {useUserStore} from '@/store/user'
 import {ElMessage} from 'element-plus'
 
-// 核心页面
-const Layout = () => import('@/layout/index.vue')
-const ERROR_404 = () => import('@/views/error/404.vue')
-const Login = () => import('@/views/login/login_index.vue')
-const Redirect = () => import('@/views/redirect/redirect_index.vue')
-// 控制台
-const Dashboard = () => import('@/views/dashboard/dashboard_index.vue')
-// 权限管理
-const User = () => import('@/views/system/sys_user/sys_user_index.vue')
-const Role = () => import('@/views/system/sys_role/sys_role_index.vue')
-const Menu = () => import('@/views/system/sys_menu/sys_menu_index.vue')
-// 系统管理
-const Setting = () => import('@/views/system/sys_config/sys_config_index.vue')
-const Region = () => import('@/views/system/sys_region/sys_region_index.vue')
+// 导入各模块路由
+import {coreRoutes} from './modules/core'
+import {dashboardRoutes} from './modules/dashboard'
+import {permissionRoutes} from './modules/permission'
+import {systemRoutes} from './modules/system'
 
-
-// 路由配置
+// 合并所有路由
 const routes: RouteRecordRaw[] = [
-  {
-    path: '/',
-    redirect: '/dashboard',
-  },
-  //   重定向页面（用于刷新）
-  {
-    path: '/redirect',
-    component: Layout,
-    meta: {
-      hidden: true,
-    },
-    children: [
-      {
-        path: '/redirect/:path(.*)',
-        component: Redirect,
-        meta: {
-          hidden: true,
-        },
-      },
-    ],
-  },
-  //   404 页面
-  {
-    path: '/:pathMatch(.*)*',
-    name: 'NotFound',
-    component: ERROR_404,
-    meta: {
-      title: '404',
-      hidden: true,
-    },
-  },
-  //   登录页面
-  {
-    path: '/login',
-    name: 'Login',
-    component: Login,
-    meta: {
-      title: '登录',
-      hidden: true,
-    },
-  },
-  //   控制台
-  {
-    path: '/dashboard',
-    component: Layout,
-    redirect: '/dashboard',
-    meta: {
-      title: '控制台',
-      icon: 'HomeFilled',
-      multiMenu: false,
-    },
-    children: [
-      {
-        path: '/dashboard',
-        name: 'Dashboard',
-        component: Dashboard,
-        meta: {
-          title: '控制台',
-          icon: 'HomeFilled',
-        },
-      },
-    ],
-  },
-  //   权限管理
-  {
-    path: '/permission',
-    component: Layout,
-    redirect: '/permission/user',
-    meta: {
-      title: '权限管理',
-      icon: 'Lock',
-      multiMenu: true,
-    },
-    children: [
-      {
-        path: '/permission/user',
-        name: 'User',
-        component: User,
-        meta: {
-          title: '用户管理',
-          icon: 'User',
-          permission: 'system:user:page',
-        },
-      },
-      {
-        path: '/permission/role',
-        name: 'Role',
-        component: Role,
-        meta: {
-          title: '角色管理',
-          icon: 'Avatar',
-          permission: 'system:role:page',
-        },
-      },
-      {
-        path: '/permission/menu',
-        name: 'Menu',
-        component: Menu,
-        meta: {
-          title: '权限管理',
-          icon: 'Menu',
-          permission: 'system:menu:page',
-        },
-      },
-    ],
-  },
-  //   系统管理
-  {
-    path: '/system',
-    component: Layout,
-    redirect: '/system/setting',
-    meta: {
-      title: '系统管理',
-      icon: 'Setting',
-      multiMenu: true,
-    },
-    children: [
-      {
-        path: '/system/setting',
-        name: 'Setting',
-        component: Setting,
-        meta: {
-          title: '系统设置',
-          icon: 'Setting',
-          permission: 'system:config:page',
-        },
-      },
-      {
-        path: '/system/region',
-        name: 'Region',
-        component: Region,
-        meta: {
-          title: '城市地区信息',
-          icon: 'Location',
-          permission: 'system:region:page',
-        },
-      },
-    ],
-  },
+  ...coreRoutes,
+  ...dashboardRoutes,
+  ...permissionRoutes,
+  ...systemRoutes,
 ]
 
 
