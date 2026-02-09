@@ -3,7 +3,7 @@
     <el-aside :width="isCollapse ? '64px' : '220px'" class="sidebar">
       <div class="logo">
         <img src="/vite.svg" alt="Logo" />
-        <span v-show="!isCollapse">管理后台</span>
+        <span v-show="!isCollapse">MIKUYUN</span>
       </div>
       <el-menu
         :default-active="activeMenu"
