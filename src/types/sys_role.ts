@@ -26,3 +26,9 @@ export interface SysRoleQuery {
   current: number
   size: number
 }
+
+// 编辑角色权限请求参数
+export interface EditRPEvt {
+  roleId: number
+  ids: number[]
+}

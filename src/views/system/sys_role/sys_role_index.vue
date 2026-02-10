@@ -121,24 +121,53 @@
         </div>
       </template>
     </el-dialog>
+
+    <!-- 角色权限编辑弹窗 -->
+    <el-dialog
+        v-model="permissionDialogVisible"
+        title="编辑角色权限"
+        width="600px"
+        :close-on-click-modal="permissionDialogVisible"
+        @close="handlePermissionDialogClose"
+    >
+      <div class="permission-tree-container">
+        <el-tree
+            ref="permissionTreeRef"
+            :data="permissionTreeData"
+            show-checkbox
+            node-key="id"
+            :props="{
+              children: 'children',
+              label: 'name'
+            }"
+            :default-checked-keys="defaultCheckedKeys"
+            :default-expanded-keys="defaultExpandedKeys"
+        />
+      </div>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="handlePermissionCancel">取消</el-button>
+          <el-button type="primary" @click="handlePermissionSubmit" :loading="permissionLoading">确定</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted} from 'vue'
+import {nextTick, onMounted, ref} from 'vue'
 import {ElMessage, ElMessageBox} from 'element-plus'
 import {
-  getRoleList,
   addSysRole,
-  updateSysRole,
-  deleteSysRole
+  deleteSysRole,
+  editRolePermissions,
+  getRoleList,
+  getRolePermissions,
+  updateSysRole
 } from '@/api/sys_role.ts'
-import type {
-  SysRoleListVo,
-  AddSysRoleRequest,
-  UpdateSysRoleRequest,
-  SysRoleQuery
-} from '@/types/sys_role.ts'
+import {getMenuTree} from '@/api/sys_menu'
+import type {SysMenuListVo} from '@/types/sys_menu'
+import type {AddSysRoleRequest, SysRoleListVo, SysRoleQuery, UpdateSysRoleRequest} from '@/types/sys_role.ts'
 import type {IdNumberRequest} from '@/types/common_types.ts'
 
 const searchForm = ref({
@@ -163,10 +192,10 @@ const fetchRoleList = async () => {
     }
     params.roleName = searchForm.value.roleName
     params.roleCode = searchForm.value.roleCode
-    
+
     const response = await getRoleList(params)
     tableData.value = response.data || []
-    
+
     // 根据每页数量判断是否有下一页
     pagination.value.total = tableData.value.length === pagination.value.size
         ? (pagination.value.page + 1) * pagination.value.size
@@ -192,6 +221,15 @@ const dialogVisible = ref(false)
 const dialogTitle = ref('')
 const isEdit = ref(false)
 const roleFormRef = ref()
+
+// 权限管理相关
+const permissionDialogVisible = ref(false)
+const permissionTreeRef = ref()
+const permissionTreeData = ref<SysMenuListVo[]>([])
+const defaultCheckedKeys = ref<number[]>([])
+const defaultExpandedKeys = ref<number[]>([])
+const currentRoleId = ref<number>(0)
+const permissionLoading = ref(false)
 
 const roleFormData = ref<AddSysRoleRequest | UpdateSysRoleRequest>({
   roleName: '',
@@ -234,7 +272,7 @@ const handleEdit = (row: SysRoleListVo) => {
   isEdit.value = true
   dialogTitle.value = '编辑角色'
   dialogVisible.value = true
-  
+
   // 填充表单数据
   setTimeout(() => {
     roleFormData.value = {
@@ -250,7 +288,6 @@ const handleEdit = (row: SysRoleListVo) => {
 const handleSubmit = async () => {
   // 验证表单
   await roleFormRef.value.validate()
-  
   try {
     if (isEdit.value) {
       // 编辑角色
@@ -270,8 +307,58 @@ const handleSubmit = async () => {
   }
 }
 
-const handlePermission = (row: SysRoleListVo) => {
-  ElMessage.info(`配置角色权限: ${row.roleName}`)
+const handlePermission = async (row: SysRoleListVo) => {
+  // 先重置状态
+  currentRoleId.value = 0
+  defaultCheckedKeys.value = []
+  // 确保树引用存在后再操作
+  if (permissionTreeRef.value) {
+    permissionTreeRef.value.setCheckedKeys([])
+  }
+  // 打开弹窗
+  currentRoleId.value = row.id
+  permissionDialogVisible.value = true
+  try {
+    // 并行获取权限树和角色权限
+    const [treeRes, permissionRes] = await Promise.all([
+      getMenuTree({id: 0}),
+      getRolePermissions(row.id)
+    ])
+    // 设置权限树数据
+    permissionTreeData.value = treeRes.data || []
+    // 设置默认展开节点
+    const getAllNodeIds = (nodes: any[]): number[] => {
+      let ids: number[] = []
+      nodes.forEach(node => {
+        ids.push(node.id)
+        if (node.children && node.children.length > 0) {
+          ids = ids.concat(getAllNodeIds(node.children))
+        }
+      })
+      return ids
+    }
+    defaultExpandedKeys.value = getAllNodeIds(permissionTreeData.value)
+    // 设置选中的权限节点
+    defaultCheckedKeys.value = Array.isArray(permissionRes.data) ? permissionRes.data : []
+    // 等待DOM更新后设置选中状态
+    await nextTick(() => {
+      if (permissionTreeRef.value) {
+        permissionTreeRef.value.setCheckedKeys(defaultCheckedKeys.value)
+      }
+    })
+  } catch (error) {
+    console.error('获取权限数据失败:', error)
+    ElMessage.error('获取权限数据失败')
+    // 出错时清空状态
+    defaultCheckedKeys.value = []
+    permissionTreeData.value = []
+    defaultExpandedKeys.value = []
+    await nextTick(() => {
+      if (permissionTreeRef.value) {
+        permissionTreeRef.value.setCheckedKeys([])
+      }
+    })
+  }
 }
 
 const handleDelete = async (row: SysRoleListVo) => {
@@ -301,6 +388,49 @@ const handleDelete = async (row: SysRoleListVo) => {
   }
 }
 
+// 关闭权限弹窗时的清理
+const handlePermissionDialogClose = () => {
+  // 清空选中状态
+  defaultCheckedKeys.value = []
+  currentRoleId.value = 0
+  permissionLoading.value = false
+
+  // 重置树组件的选中状态
+  if (permissionTreeRef.value) {
+    permissionTreeRef.value.setCheckedKeys([])
+  }
+}
+
+// 取消按钮处理
+const handlePermissionCancel = () => {
+  permissionDialogVisible.value = false
+}
+
+// 提交权限修改
+const handlePermissionSubmit = async () => {
+  try {
+    permissionLoading.value = true
+
+    // 获取选中的权限节点
+    const checkedKeys = permissionTreeRef.value.getCheckedKeys()
+    // 合并选中和半选中的权限（通常只需要完全选中的）
+    const permissionIds = [...checkedKeys]
+
+    await editRolePermissions({
+      roleId: currentRoleId.value,
+      ids: permissionIds
+    })
+
+    ElMessage.success('权限配置成功')
+    permissionDialogVisible.value = false
+  } catch (error: any) {
+    ElMessage.error(error.message || '权限配置失败')
+  } finally {
+    // 必须在finally中重置loading状态
+    permissionLoading.value = false
+  }
+}
+
 onMounted(() => {
   fetchRoleList()
 })
@@ -317,6 +447,14 @@ onMounted(() => {
 
   .dialog-footer {
     text-align: right;
+  }
+
+  .permission-tree-container {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #e4e7ed;
+    border-radius: 4px;
+    padding: 10px;
   }
 }
 </style>

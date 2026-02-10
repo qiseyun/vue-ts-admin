@@ -3,7 +3,8 @@ import type {
   SysRoleListVo,
   AddSysRoleRequest,
   UpdateSysRoleRequest,
-  SysRoleQuery
+  SysRoleQuery,
+  EditRPEvt,
 } from "@/types/sys_role.ts";
 import type {ApiResponse, IdNumberRequest} from "@/types/common_types.ts";
 
@@ -25,4 +26,14 @@ export const updateSysRole = (data: UpdateSysRoleRequest) => {
 // 删除角色
 export const deleteSysRole = (data: IdNumberRequest) => {
   return post<ApiResponse>('/sysRole/del', data)
+}
+
+// 编辑角色权限
+export const editRolePermissions = (data: EditRPEvt) => {
+  return post<ApiResponse>('/sysRP/edit', data)
+}
+
+// 获取角色权限列表
+export const getRolePermissions = (roleId: number) => {
+  return get<ApiResponse<number[]>>('/sysMenu/rolePermissions', {roleId})
 }
