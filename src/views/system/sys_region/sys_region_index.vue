@@ -85,7 +85,8 @@
                     {{ item.name }}
                   </span>
                 </div>
-                <div class="table-cell zip-cell" @click="copyText(item.zip)">{{ item.zip }}</div>
+                <div class="table-cell zip-cell" @click="copyText(item.zip)"><span
+                    :title="'点击复制 ' + item.zip">{{ item.zip }}</span></div>
                 <div class="table-cell action-cell">
                   <el-button
                       v-if="item.hasChildren"

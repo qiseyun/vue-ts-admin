@@ -16,7 +16,7 @@
         </el-form-item>
       </el-form>
 
-      <el-table v-loading="loading" :data="tableData" border row-key="id">
+      <el-table v-loading="loading" :data="tableData" border row-key="id" :stripe="true">
         <el-table-column prop="name" label="菜单名称" width="250"/>
         <el-table-column prop="permission" label="权限标识">
           <template #default="{ row }">
@@ -44,7 +44,7 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200" fixed="right">
+        <el-table-column label="操作" width="150" fixed="right">
           <template #default="{ row }">
             <el-button
                 v-permission="'system:menu:edit'"

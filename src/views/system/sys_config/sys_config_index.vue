@@ -38,9 +38,31 @@
           stripe
       >
         <el-table-column prop="id" label="ID" width="60"/>
-        <el-table-column prop="configName" label="参数名称" show-overflow-tooltip width="100"/>
-        <el-table-column prop="configKey" label="参数键名" show-overflow-tooltip width="100"/>
-        <el-table-column prop="configValue" label="参数值" show-overflow-tooltip width="300"/>
+        <el-table-column prop="configName" label="配置名称" show-overflow-tooltip width="100"/>
+        <el-table-column prop="configKey" label="配置key" show-overflow-tooltip width="100">
+          <template #default="{ row }">
+            <span
+                v-if="row.configKey"
+                @click="copyText(row.configKey)"
+                :title="'点击复制 ' + row.configKey"
+            >
+              {{ row.configKey }}
+            </span>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="configValue" label="配置value" show-overflow-tooltip width="300">
+          <template #default="{ row }">
+            <span
+                v-if="row.configValue"
+                @click="copyText(row.configValue)"
+                title="点击复制value"
+            >
+              {{ row.configValue }}
+            </span>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="isLock" label="锁定" width="60">
           <template #default="{ row }">
             <el-tag v-if="row.isLock === 1" type="danger">是</el-tag>
@@ -53,6 +75,7 @@
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="{ row }">
             <el-button
+                :disabled="row.isLock === 1"
                 v-permission="'system:config:edit'"
                 type="primary"
                 size="small"
@@ -149,6 +172,7 @@
 <script setup lang="ts">
 import {ref, onMounted} from 'vue'
 import {ElMessage, ElMessageBox} from 'element-plus'
+import {copyText} from '@/utils/common_utils.ts'
 import {getSysConfigList, addSysConfig, updateSysConfig, deleteSysConfig} from '@/api/sys_config.ts'
 import type {
   SysConfigListVo,
