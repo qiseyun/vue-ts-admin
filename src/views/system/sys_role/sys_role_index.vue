@@ -23,10 +23,21 @@
         </el-form-item>
       </el-form>
 
-      <el-table :data="tableData" border stripe>
+      <el-table v-loading="loading" :data="tableData" border stripe>
         <el-table-column prop="id" label="ID" width="80"/>
         <el-table-column prop="roleName" label="角色名称"/>
-        <el-table-column prop="roleCode" label="角色代码"/>
+        <el-table-column prop="roleCode" label="角色代码">
+          <template #default="{ row }">
+            <span
+                v-if="row.roleCode"
+                @click="copyText(row.roleCode)"
+                :title="'点击复制 ' + row.roleCode"
+            >
+              {{ row.roleCode }}
+            </span>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="roleDesc" label="角色描述"/>
         <el-table-column prop="gmtCreated" label="创建时间" width="180"/>
         <el-table-column label="操作" width="250" fixed="right">
@@ -169,6 +180,7 @@ import {getMenuTree} from '@/api/sys_menu'
 import type {SysMenuListVo} from '@/types/sys_menu'
 import type {AddSysRoleRequest, SysRoleListVo, SysRoleQuery, UpdateSysRoleRequest} from '@/types/sys_role.ts'
 import type {IdNumberRequest} from '@/types/common_types.ts'
+import {copyText} from "@/utils/common_utils.ts";
 
 const searchForm = ref({
   roleName: '',
@@ -182,9 +194,11 @@ const pagination = ref({
 })
 
 const tableData = ref<SysRoleListVo[]>([])
+const loading = ref(false)
 
 // 获取角色列表
 const fetchRoleList = async () => {
+  loading.value = true
   try {
     const params: SysRoleQuery = {
       current: pagination.value.page,
@@ -203,6 +217,8 @@ const fetchRoleList = async () => {
   } catch (error) {
     console.error('获取角色列表失败:', error)
     ElMessage.error('获取角色列表失败')
+  } finally {
+    loading.value = false
   }
 }
 

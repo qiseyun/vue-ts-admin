@@ -2,37 +2,37 @@
   <el-container class="layout-container">
     <el-aside :width="isCollapse ? '64px' : '220px'" class="sidebar">
       <div class="logo">
-        <img src="/vite.svg" alt="Logo" />
+        <img src="/vite.svg" alt="Logo"/>
         <span v-show="!isCollapse">MIKUYUN</span>
       </div>
       <el-menu
-        :default-active="activeMenu"
-        :collapse="isCollapse"
-        :unique-opened="true"
-        router
+          :default-active="activeMenu"
+          :collapse="isCollapse"
+          :unique-opened="true"
+          router
       >
         <template v-for="route in menuRoutes" :key="route.path">
           <el-sub-menu v-if="route.children && route.children.length > 0 && route.meta.multiMenu" :index="route.path">
             <template #title>
               <el-icon v-if="route.meta?.icon">
-                <component :is="route.meta.icon" />
+                <component :is="route.meta.icon"/>
               </el-icon>
               <span>{{ route.meta?.title }}</span>
             </template>
             <el-menu-item
-              v-for="child in route.children"
-              :key="child.path"
-              :index="child.path"
+                v-for="child in route.children"
+                :key="child.path"
+                :index="child.path"
             >
               <el-icon v-if="child.meta?.icon">
-                <component :is="child.meta.icon" />
+                <component :is="child.meta.icon"/>
               </el-icon>
               <span>{{ child.meta?.title }}</span>
             </el-menu-item>
           </el-sub-menu>
           <el-menu-item v-else :index="route.path">
             <el-icon v-if="route.meta?.icon">
-              <component :is="route.meta.icon" />
+              <component :is="route.meta.icon"/>
             </el-icon>
             <span>{{ route.meta?.title }}</span>
           </el-menu-item>
@@ -44,20 +44,26 @@
       <el-header class="header">
         <div class="header-left">
           <el-icon class="collapse-icon" @click="toggleCollapse">
-            <Fold v-if="!isCollapse" />
-            <Expand v-else />
+            <Fold v-if="!isCollapse"/>
+            <Expand v-else/>
           </el-icon>
         </div>
         <div class="header-right">
           <el-dropdown @command="handleCommand">
             <div class="user-info">
-              <el-avatar src="./miku.png" />
+              <el-avatar src="./miku.png"/>
               <span class="username">{{ userStore.userInfo?.realName }}</span>
             </div>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item>{{ userStore.userInfo?.email }}</el-dropdown-item>
-                <el-dropdown-item>{{ userStore.userInfo?.telephone }}</el-dropdown-item>
+                <el-dropdown-item @click="copyText(userStore.userInfo?.email)">{{
+                    userStore.userInfo?.email
+                  }}
+                </el-dropdown-item>
+                <el-dropdown-item @click="copyText(userStore.userInfo?.telephone)">{{
+                    userStore.userInfo?.telephone
+                  }}
+                </el-dropdown-item>
                 <el-dropdown-item command="profile">个人中心</el-dropdown-item>
                 <el-dropdown-item divided command="logout">退出登录</el-dropdown-item>
               </el-dropdown-menu>
@@ -67,12 +73,12 @@
       </el-header>
 
       <!-- 标签页导航 -->
-      <tags-view />
+      <tags-view/>
 
       <el-main class="main-content">
         <router-view v-slot="{ Component }">
           <transition name="fade-transform" mode="out-in">
-            <component :is="Component" />
+            <component :is="Component"/>
           </transition>
         </router-view>
       </el-main>
@@ -81,11 +87,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { ElMessageBox, ElMessage } from 'element-plus'
-import { useUserStore } from '@/store/user'
+import {ref, computed} from 'vue'
+import {useRouter, useRoute} from 'vue-router'
+import {ElMessageBox, ElMessage} from 'element-plus'
+import {useUserStore} from '@/store/user'
 import TagsView from '@/components/TagsView.vue'
+import {copyText} from "@/utils/common_utils.ts";
 
 const router = useRouter()
 const route = useRoute()
@@ -133,7 +140,7 @@ const menuRoutes = computed(() => {
 
 // 当前激活的菜单
 const activeMenu = computed(() => {
-  const { path } = route
+  const {path} = route
   if (path === '/') return '/dashboard/index'
   return path
 })

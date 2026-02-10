@@ -19,12 +19,24 @@
           <el-button icon="Refresh" @click="handleReset">重置</el-button>
         </el-form-item>
       </el-form>
-      <el-table :data="tableData" border stripe>
+      <el-table v-loading="loading" :data="tableData" border stripe>
         <el-table-column prop="id" label="ID" width="60"/>
         <el-table-column prop="username" label="用户名" width="120"/>
         <el-table-column prop="realName" label="真实姓名" width="120"/>
         <el-table-column prop="phone" label="手机号" width="120"/>
-        <el-table-column prop="email" label="邮箱" width="180"/>
+        <el-table-column prop="email" label="邮箱" width="180">
+          <template #default="{ row }">
+            <span
+                v-if="row.email"
+                class="copyable-email"
+                @click="copyText(row.email)"
+                title="点击复制邮箱"
+            >
+              {{ row.email }}
+            </span>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="deptId" label="部门ID" width="60"/>
         <el-table-column label="状态" width="70">
           <template #default="{ row }">
@@ -143,6 +155,7 @@ import {
 } from '@/api/sys_user.ts'
 import type {SysUserListVo, AddSysUserEvt, UpdateSysUserEvt} from "@/types/sys_user.ts";
 import type {IdNumberRequest} from "@/types/common_types.ts";
+import {copyText} from "@/utils/common_utils.ts";
 
 interface UserQuery {
   phone?: string
@@ -161,9 +174,11 @@ const pagination = ref({
 })
 
 const tableData = ref<SysUserListVo[]>([])
+const loading = ref(false)
 
 // 获取用户列表
 const fetchUserList = async () => {
+  loading.value = true
   try {
     const params: UserQuery = {
       current: pagination.value.page,
@@ -179,6 +194,8 @@ const fetchUserList = async () => {
   } catch (error) {
     console.error('获取用户列表失败:', error)
     ElMessage.error('获取用户列表失败')
+  } finally {
+    loading.value = false
   }
 }
 
@@ -345,6 +362,23 @@ onMounted(() => {
 
   .dialog-footer {
     text-align: right;
+  }
+
+  .copyable-email {
+    color: #409eff;
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: all 0.3s;
+
+    &:hover {
+      background-color: #ecf5ff;
+      text-decoration: underline;
+    }
+
+    &:active {
+      background-color: #d9ecff;
+    }
   }
 }
 </style>

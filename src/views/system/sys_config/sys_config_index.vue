@@ -40,7 +40,7 @@
         <el-table-column prop="id" label="ID" width="60"/>
         <el-table-column prop="configName" label="参数名称" show-overflow-tooltip width="100"/>
         <el-table-column prop="configKey" label="参数键名" show-overflow-tooltip width="100"/>
-        <el-table-column prop="configValue" label="参数值" show-overflow-tooltip/>
+        <el-table-column prop="configValue" label="参数值" show-overflow-tooltip width="300"/>
         <el-table-column prop="isLock" label="锁定" width="60">
           <template #default="{ row }">
             <el-tag v-if="row.isLock === 1" type="danger">是</el-tag>
@@ -101,23 +101,24 @@
           :rules="rules"
           label-width="100px"
       >
-        <el-form-item label="参数名称" prop="configName">
+        <el-form-item label="配置名" prop="configName">
           <el-input
               v-model="form.configName"
-              placeholder="请输入参数名称"
+              placeholder="请输入配置名称"
           />
         </el-form-item>
-        <el-form-item label="参数键名" prop="configKey">
+        <el-form-item label="配置key" prop="configKey">
           <el-input
               v-model="form.configKey"
-              placeholder="请输入参数键名"
+              placeholder="请输入配置key"
           />
         </el-form-item>
-        <el-form-item label="参数值" prop="configValue">
+        <el-form-item label="配置value" prop="configValue">
           <el-input
               v-model="form.configValue"
               type="textarea"
-              placeholder="请输入参数值"
+              placeholder="请输入配置value"
+              :rows="10"
           />
         </el-form-item>
         <el-form-item label="是否锁定" prop="isLock">
@@ -131,6 +132,7 @@
               v-model="form.remark"
               type="textarea"
               placeholder="请输入备注"
+              :rows="2"
           />
         </el-form-item>
       </el-form>
@@ -252,7 +254,7 @@ const handleCurrentChange = () => {
 // 添加
 const handleAdd = () => {
   isEdit.value = false
-  dialogTitle.value = '新增参数配置'
+  dialogTitle.value = '新增系统配置'
   dialogVisible.value = true
 
   // 重置表单
@@ -271,7 +273,7 @@ const handleAdd = () => {
 // 编辑
 const handleEdit = (row: SysConfigListVo) => {
   isEdit.value = true
-  dialogTitle.value = '编辑参数配置'
+  dialogTitle.value = '编辑系统配置'
   dialogVisible.value = true
   // 填充表单数据
   setTimeout(() => {

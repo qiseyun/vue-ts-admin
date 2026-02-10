@@ -85,7 +85,7 @@
                     {{ item.name }}
                   </span>
                 </div>
-                <div class="table-cell zip-cell">{{ item.zip }}</div>
+                <div class="table-cell zip-cell" @click="copyText(item.zip)">{{ item.zip }}</div>
                 <div class="table-cell action-cell">
                   <el-button
                       v-if="item.hasChildren"
@@ -118,6 +118,7 @@ import {ElMessage} from 'element-plus'
 import {Search, ArrowRight} from '@element-plus/icons-vue'
 import {getRegionTree} from '@/api/region'
 import type {RegionTreeVO} from '@/types/region'
+import {copyText} from '@/utils/common_utils.ts'
 
 // 数据相关
 const originalData = ref<RegionTreeVO[]>([])
