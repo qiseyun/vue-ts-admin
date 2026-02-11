@@ -25,3 +25,8 @@ export interface UpdateSysUserEvt {
   realName: string
   email?: string
 }
+
+export interface EditUserRoleEvt {
+  sysUserId: number
+  roleIds: number[]
+}

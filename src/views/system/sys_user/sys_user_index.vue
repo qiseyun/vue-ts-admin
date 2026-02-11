@@ -46,7 +46,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="gmtCreated" label="创建时间" width="180"/>
-        <el-table-column label="操作" width="200" fixed="right">
+        <el-table-column label="操作" width="260" fixed="right">
           <template #default="{ row }">
             <el-button
                 v-permission="'system:user:edit'"
@@ -67,6 +67,16 @@
                 @click="handleDelete(row)"
             >
               删除
+            </el-button>
+            <el-button
+                v-permission="'system:user:edit_role'"
+                type="warning"
+                size="small"
+                link
+                icon="UserFilled"
+                @click="handleRoleAssign(row)"
+            >
+              角色
             </el-button>
           </template>
         </el-table-column>
@@ -141,6 +151,35 @@
         </div>
       </template>
     </el-dialog>
+
+    <!-- 用户角色分配弹窗 -->
+    <el-dialog
+        v-model="roleDialogVisible"
+        title="分配用户角色"
+        width="600px"
+        :close-on-click-modal="false"
+    >
+      <el-transfer
+          v-model="selectedRoleIds"
+          :data="roleTransferData"
+          :titles="['可分配角色', '已分配角色']"
+          filter-placeholder="请输入角色名称"
+          :filter-method="filterRoleMethod"
+      >
+        <template #default="{ option }">
+          <span>{{ option.label }}</span>
+          <el-tag size="small" type="info" style="margin-left: 8px">
+            {{ option.code }}
+          </el-tag>
+        </template>
+      </el-transfer>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="roleDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="handleRoleSubmit" :loading="roleLoading">确定</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -151,8 +190,11 @@ import {
   getUserList,
   addSysUser,
   updateSysUser,
-  deleteSysUser
+  deleteSysUser,
+  getUserRoles,
+  editUserRoles
 } from '@/api/sys_user.ts'
+import {getRoleList} from '@/api/sys_role.ts'
 import type {SysUserListVo, AddSysUserEvt, UpdateSysUserEvt} from "@/types/sys_user.ts";
 import type {IdNumberRequest} from "@/types/common_types.ts";
 import {copyText} from "@/utils/common_utils.ts";
@@ -213,6 +255,18 @@ const dialogVisible = ref(false)
 const dialogTitle = ref('')
 const isEdit = ref(false)
 const userFormRef = ref()
+
+// 角色分配相关
+const roleDialogVisible = ref(false)
+const roleLoading = ref(false)
+const selectedRoleIds = ref<number[]>([])
+const roleTransferData = ref<Array<{
+  key: number
+  label: string
+  code: string
+  disabled: boolean
+}>>([])
+const currentUser = ref<SysUserListVo | null>(null)
 
 const userFormData = ref<AddSysUserEvt | UpdateSysUserEvt>({
   username: '',
@@ -343,6 +397,63 @@ const handleDelete = async (row: SysUserListVo) => {
     }
     // 取消删除
     console.log('用户取消删除操作')
+  }
+}
+
+// 处理角色分配
+const handleRoleAssign = async (row: SysUserListVo) => {
+  currentUser.value = row
+  roleDialogVisible.value = true
+  roleLoading.value = true
+
+  try {
+    // 并行获取系统角色列表和用户已有角色
+    const [rolesResponse, userRolesResponse] = await Promise.all([
+      getRoleList({current: 1, size: 1000}), // 获取所有角色
+      getUserRoles(row.id)
+    ])
+
+    // 处理角色数据为穿梭框格式
+    const roles = rolesResponse.data || []
+    roleTransferData.value = roles.map(role => ({
+      key: role.id,
+      label: role.roleName,
+      code: role.roleCode,
+      disabled: false
+    }))
+
+    // 设置用户已有的角色
+    selectedRoleIds.value = Array.isArray(userRolesResponse.data) ? userRolesResponse.data : []
+  } catch (error: any) {
+    console.error('获取角色数据失败:', error)
+    ElMessage.error(error.message || '获取角色数据失败')
+  } finally {
+    roleLoading.value = false
+  }
+}
+
+// 角色过滤方法
+const filterRoleMethod = (query: string, item: { label: string; code: string }) => {
+  return item.label.toLowerCase().includes(query.toLowerCase()) ||
+      item.code.toLowerCase().includes(query.toLowerCase())
+}
+
+// 提交角色分配
+const handleRoleSubmit = async () => {
+  if (!currentUser.value) return
+
+  roleLoading.value = true
+  try {
+    await editUserRoles({
+      sysUserId: currentUser.value.id,
+      roleIds: selectedRoleIds.value
+    })
+    ElMessage.success('角色分配成功')
+    roleDialogVisible.value = false
+  } catch (error: any) {
+    ElMessage.error(error.message || '角色分配失败')
+  } finally {
+    roleLoading.value = false
   }
 }
 
