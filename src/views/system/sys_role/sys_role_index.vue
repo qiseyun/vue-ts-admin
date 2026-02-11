@@ -143,16 +143,18 @@
     >
       <div class="permission-tree-container">
         <el-tree
-            :ref="permissionTreeRef"
+            @change="treeChange"
+            v-if="isShowTree"
+            ref="permissionTreeRef"
             :data="permissionTreeData"
+            :default-expand-all="true"
+            :default-checked-keys="defaultCheckedKeys"
             show-checkbox
             node-key="id"
             :props="{
               children: 'children',
               label: 'name'
             }"
-            :default-checked-keys="defaultCheckedKeys"
-            :default-expanded-keys="defaultExpandedKeys"
         />
       </div>
       <template #footer>
@@ -166,7 +168,7 @@
 </template>
 
 <script setup lang="ts">
-import {nextTick, onMounted, ref} from 'vue'
+import {onMounted, ref} from 'vue'
 import {ElMessage, ElMessageBox} from 'element-plus'
 import {
   addSysRole,
@@ -243,9 +245,13 @@ const permissionDialogVisible = ref(false)
 const permissionTreeRef = ref()
 const permissionTreeData = ref<SysMenuListVo[]>([])
 const defaultCheckedKeys = ref<number[]>([])
-const defaultExpandedKeys = ref<number[]>([])
 const currentRoleId = ref<number>(0)
 const permissionLoading = ref(false)
+const isShowTree = ref(false)
+
+const treeChange = () => {
+  console.log('checkedKeys:', permissionTreeRef.value.getCheckedKeys())
+}
 
 const roleFormData = ref<AddSysRoleRequest | UpdateSysRoleRequest>({
   roleName: '',
@@ -324,16 +330,9 @@ const handleSubmit = async () => {
 }
 
 const handlePermission = async (row: SysRoleListVo) => {
-  // 先重置状态
-  currentRoleId.value = 0
-  defaultCheckedKeys.value = []
-  // 确保树引用存在后再操作
-  if (permissionTreeRef.value) {
-    permissionTreeRef.value.setCheckedKeys([])
-  }
-  // 打开弹窗
   currentRoleId.value = row.id
-  permissionDialogVisible.value = true
+  // 先重置状态
+  defaultCheckedKeys.value = []
   try {
     // 并行获取权限树和角色权限
     const [treeRes, permissionRes] = await Promise.all([
@@ -342,39 +341,18 @@ const handlePermission = async (row: SysRoleListVo) => {
     ])
     // 设置权限树数据
     permissionTreeData.value = treeRes.data || []
-    // 设置默认展开节点
-    const getAllNodeIds = (nodes: any[]): number[] => {
-      let ids: number[] = []
-      nodes.forEach(node => {
-        ids.push(node.id)
-        if (node.children && node.children.length > 0) {
-          ids = ids.concat(getAllNodeIds(node.children))
-        }
-      })
-      return ids
-    }
-    defaultExpandedKeys.value = getAllNodeIds(permissionTreeData.value)
-    console.log('defaultExpandedKeys:', defaultExpandedKeys.value)
     // 设置选中的权限节点
-    defaultCheckedKeys.value = Array.isArray(permissionRes.data) ? permissionRes.data : []
-    // 等待DOM更新后设置选中状态
-    await nextTick(() => {
-      if (permissionTreeRef.value) {
-        permissionTreeRef.value.setCheckedKeys(defaultCheckedKeys.value)
-      }
-    })
+    defaultCheckedKeys.value = permissionRes.data ? permissionRes.data : []
+    console.log('defaultCheckedKeys:', defaultCheckedKeys.value)
+    // 打开弹窗
+    permissionDialogVisible.value = true
+    isShowTree.value = true
   } catch (error) {
     console.error('获取权限数据失败:', error)
     ElMessage.error('获取权限数据失败')
     // 出错时清空状态
     defaultCheckedKeys.value = []
     permissionTreeData.value = []
-    defaultExpandedKeys.value = []
-    await nextTick(() => {
-      if (permissionTreeRef.value) {
-        permissionTreeRef.value.setCheckedKeys([])
-      }
-    })
   }
 }
 
@@ -408,18 +386,15 @@ const handleDelete = async (row: SysRoleListVo) => {
 // 关闭权限弹窗时的清理
 const handlePermissionDialogClose = () => {
   // 清空选中状态
+  handlePermissionCancel()
   defaultCheckedKeys.value = []
   currentRoleId.value = 0
   permissionLoading.value = false
-
-  // 重置树组件的选中状态
-  if (permissionTreeRef.value) {
-    permissionTreeRef.value.setCheckedKeys([])
-  }
 }
 
 // 取消按钮处理
 const handlePermissionCancel = () => {
+  isShowTree.value = false
   permissionDialogVisible.value = false
 }
 
@@ -430,6 +405,7 @@ const handlePermissionSubmit = async () => {
 
     // 获取选中的权限节点
     const checkedKeys = permissionTreeRef.value.getCheckedKeys()
+    console.log('checkedKeys:', checkedKeys)
     // 合并选中和半选中的权限（通常只需要完全选中的）
     const permissionIds = [...checkedKeys]
 
