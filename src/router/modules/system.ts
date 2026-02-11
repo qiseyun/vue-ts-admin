@@ -24,7 +24,7 @@ export const systemRoutes: RouteRecordRaw[] = [
         meta: {
           title: '系统设置',
           icon: 'Setting',
-          permission: 'system:config:page',
+          permission: 'system:config:page_view',
         },
       },
       {
@@ -34,7 +34,7 @@ export const systemRoutes: RouteRecordRaw[] = [
         meta: {
           title: '城市地区信息',
           icon: 'Location',
-          permission: 'system:region:page',
+          permission: 'system:region:page_view',
         },
       },
     ],

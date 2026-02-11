@@ -25,7 +25,7 @@ export const permissionRoutes: RouteRecordRaw[] = [
         meta: {
           title: '用户管理',
           icon: 'User',
-          permission: 'system:user:page',
+          permission: 'system:user:page_view',
         },
       },
       {
@@ -35,7 +35,7 @@ export const permissionRoutes: RouteRecordRaw[] = [
         meta: {
           title: '角色管理',
           icon: 'Avatar',
-          permission: 'system:role:page',
+          permission: 'system:role:page_view',
         },
       },
       {
@@ -45,7 +45,7 @@ export const permissionRoutes: RouteRecordRaw[] = [
         meta: {
           title: '权限管理',
           icon: 'Menu',
-          permission: 'system:menu:page',
+          permission: 'system:menu:page_view',
         },
       },
     ],
