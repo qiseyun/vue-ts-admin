@@ -58,24 +58,23 @@
         </el-card>
       </el-col>
 
-      <!-- 右侧：系统信息和最近活动 -->
       <el-col :span="14">
-        <!-- 系统信息 -->
+        <!-- 技术栈信息 -->
         <el-card class="info-card">
           <template #header>
-            <span>💻 系统信息</span>
+            <span>💻 技术栈</span>
           </template>
           <el-descriptions :column="2" border>
             <el-descriptions-item label="系统名称">{{ getAppTitle() }}</el-descriptions-item>
             <el-descriptions-item label="版本号">v1.0.0</el-descriptions-item>
-            <el-descriptions-item label="前端框架">Vue 3.4 + TypeScript</el-descriptions-item>
-            <el-descriptions-item label="UI框架">Element Plus 2.5</el-descriptions-item>
-            <el-descriptions-item label="构建工具">Vite 5.0</el-descriptions-item>
+            <el-descriptions-item label="前端框架">Vue ^3.5.24 + TypeScript</el-descriptions-item>
+            <el-descriptions-item label="UI框架">Element Plus ^2.13.2</el-descriptions-item>
+            <el-descriptions-item label="构建工具">Vite ^7.2.4</el-descriptions-item>
             <el-descriptions-item label="状态管理">Pinia</el-descriptions-item>
-            <el-descriptions-item label="路由管理">Vue Router 4</el-descriptions-item>
-            <el-descriptions-item label="HTTP客户端">Axios</el-descriptions-item>
-            <el-descriptions-item label="开发环境">Node.js 18+</el-descriptions-item>
-            <el-descriptions-item label="包管理器">pnpm</el-descriptions-item>
+            <el-descriptions-item label="路由管理">Vue Router ^5.0.2</el-descriptions-item>
+            <el-descriptions-item label="HTTP客户端">Axios ^1.13.4</el-descriptions-item>
+            <el-descriptions-item label="开发环境">Node.js v22.20.0</el-descriptions-item>
+            <el-descriptions-item label="包管理器">pnpm 10.28.2</el-descriptions-item>
           </el-descriptions>
         </el-card>
       </el-col>
