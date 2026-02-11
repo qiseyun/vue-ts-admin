@@ -46,7 +46,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="gmtCreated" label="创建时间" width="180"/>
-        <el-table-column label="操作" width="260" fixed="right">
+        <el-table-column label="操作" width="200" fixed="right">
           <template #default="{ row }">
             <el-button
                 v-permission="'system:user:edit'"
@@ -163,11 +163,10 @@
           v-model="selectedRoleIds"
           :data="roleTransferData"
           :titles="['可分配角色', '已分配角色']"
-          filter-placeholder="请输入角色名称"
-          :filter-method="filterRoleMethod"
+          :filter="filterRoleMethod"
       >
         <template #default="{ option }">
-          <span>{{ option.label }}</span>
+          <span :title="option.label + ' ' + option.code">{{ option.label }}</span>
           <el-tag size="small" type="info" style="margin-left: 8px">
             {{ option.code }}
           </el-tag>
@@ -409,7 +408,7 @@ const handleRoleAssign = async (row: SysUserListVo) => {
   try {
     // 并行获取系统角色列表和用户已有角色
     const [rolesResponse, userRolesResponse] = await Promise.all([
-      getRoleList({current: 1, size: 1000}), // 获取所有角色
+      getRoleList({current: 1, size: 10000}), // 获取所有角色
       getUserRoles(row.id)
     ])
 

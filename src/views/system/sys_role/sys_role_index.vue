@@ -40,7 +40,7 @@
         </el-table-column>
         <el-table-column prop="roleDesc" label="角色描述"/>
         <el-table-column prop="gmtCreated" label="创建时间" width="180"/>
-        <el-table-column label="操作" width="250" fixed="right">
+        <el-table-column label="操作" width="200" fixed="right">
           <template #default="{ row }">
             <el-button
                 v-permission="'system:role:edit'"
@@ -143,7 +143,7 @@
     >
       <div class="permission-tree-container">
         <el-tree
-            ref="permissionTreeRef"
+            :ref="permissionTreeRef"
             :data="permissionTreeData"
             show-checkbox
             node-key="id"
@@ -354,6 +354,7 @@ const handlePermission = async (row: SysRoleListVo) => {
       return ids
     }
     defaultExpandedKeys.value = getAllNodeIds(permissionTreeData.value)
+    console.log('defaultExpandedKeys:', defaultExpandedKeys.value)
     // 设置选中的权限节点
     defaultCheckedKeys.value = Array.isArray(permissionRes.data) ? permissionRes.data : []
     // 等待DOM更新后设置选中状态
