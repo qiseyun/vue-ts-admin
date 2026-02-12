@@ -51,7 +51,7 @@
         <div class="header-right">
           <el-dropdown @command="handleCommand">
             <div class="user-info">
-              <el-avatar src="./miku.png"/>
+              <el-avatar :src="userStore.userInfo?.headPortrait || './miku.png'"/>
               <span class="username">{{ userStore.userInfo?.realName }}</span>
             </div>
             <template #dropdown>
@@ -163,7 +163,7 @@ const handleCommand = async (command: string) => {
       // 取消
     })
   } else if (command === 'profile') {
-    ElMessage.info('个人中心功能待开发')
+    await router.push('/profile')
   }
 }
 </script>

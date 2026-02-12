@@ -33,7 +33,7 @@
         <el-table-column label="菜单类型" width="90">
           <template #default="{ row }">
             <el-tag :type="row.type === 0 ? 'primary' : row.type === 1 ? 'success' : 'warning'">
-              {{ row.type === 0 ? '页面' : row.type === 1 ? '组件' : '接口' }}
+              {{ row.type === -1 ? '根节点' : row.type === 0 ? '页面' : row.type === 1 ? '组件' : '接口' }}
             </el-tag>
           </template>
         </el-table-column>

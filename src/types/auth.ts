@@ -7,6 +7,8 @@ export interface UserInfo {
   headPortrait: string
   email: string
   userType: number
+  lastLoginTime?: string | null
+  lastLoginIp?: string | null
 }
 
 // 登录表单类型

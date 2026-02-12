@@ -30,3 +30,11 @@ export interface EditUserRoleEvt {
   sysUserId: number
   roleIds: number[]
 }
+
+// 个人信息修改接口
+export interface UpdateMyInfoRequest {
+  id: number
+  headPortrait?: string
+  email: string
+  password: string
+}

@@ -343,12 +343,10 @@ const handlePermission = async (row: SysRoleListVo) => {
     permissionTreeData.value = treeRes.data || []
     // 设置选中的权限节点
     defaultCheckedKeys.value = permissionRes.data ? permissionRes.data : []
-    console.log('defaultCheckedKeys:', defaultCheckedKeys.value)
     // 打开弹窗
     permissionDialogVisible.value = true
     isShowTree.value = true
   } catch (error) {
-    console.error('获取权限数据失败:', error)
     ElMessage.error('获取权限数据失败')
     // 出错时清空状态
     defaultCheckedKeys.value = []

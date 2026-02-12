@@ -5,6 +5,7 @@ const Layout = () => import('@/layout/index.vue')
 const ERROR_404 = () => import('@/views/error/404.vue')
 const Login = () => import('@/views/login/login_index.vue')
 const Redirect = () => import('@/views/redirect/redirect_index.vue')
+const Profile = () => import('@/views/profile/profile_index.vue')
 
 // 核心路由配置
 export const coreRoutes: RouteRecordRaw[] = [
@@ -46,6 +47,16 @@ export const coreRoutes: RouteRecordRaw[] = [
     component: Login,
     meta: {
       title: '登录',
+      hidden: true,
+    },
+  },
+  // 个人中心页面
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: Profile,
+    meta: {
+      title: '个人中心',
       hidden: true,
     },
   },

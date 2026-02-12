@@ -1,6 +1,7 @@
 import {get, post} from '@/utils/request'
 import type {AddSysUserEvt, EditUserRoleEvt, SysUserListVo, UpdateSysUserEvt} from "@/types/sys_user.ts";
 import type {ApiResponse, IdNumberRequest} from "@/types/common_types.ts";
+import type {UpdateMyInfoRequest} from "@/types/sys_user.ts";
 
 // 获取用户列表
 export const getUserList = (params: {
@@ -34,4 +35,9 @@ export const getUserRoles = (sysUserId: number) => {
 // 编辑用户角色
 export const editUserRoles = (data: EditUserRoleEvt) => {
   return post<ApiResponse>('/sysUserRole/editRoles', data)
+}
+
+// 个人信息修改接口
+export function updateMyInfo(data: UpdateMyInfoRequest) {
+  return post<ApiResponse>('/sysUser/updateMy', data)
 }
