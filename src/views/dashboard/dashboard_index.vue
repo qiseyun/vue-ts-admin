@@ -26,38 +26,49 @@
         </el-card>
       </el-col>
     </el-row>
-
-    <!-- 主要内容区域 -->
     <el-row :gutter="20" class="main-content">
-      <!-- 左侧：日历和快捷操作 -->
-      <el-col :span="10">
-        <!-- 日历组件 -->
-        <el-card class="calendar-card">
-          <template #header>
-            <div class="card-header">
-              <span>📅 日历</span>
-              <el-button link type="primary" @click="handleToday">今天</el-button>
+      <!-- 日历组件 -->
+      <el-card class="calendar-card">
+        <template #header>
+          <div class="card-header">
+            <span>📅 日历</span>
+            <el-button link type="primary" @click="handleToday">今天</el-button>
+          </div>
+        </template>
+        <el-calendar v-model="calendarDate" class="custom-calendar" controller-type="select">
+          <template #date-cell="{ data }">
+            <div class="calendar-day" :class="{ 'is-selected': data.isSelected }">
+              <div class="day-number">{{ data.day.split('-')[2] }}</div>
+              <div class="day-events">
+                <span
+                    v-for="event in getEventsForDate(data.date)"
+                    :style="{
+                      color: event.color,
+                      maxWidth: '80px',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      display: 'inline-block'
+                    }"
+                    :title="event.title"
+                >
+                  {{ event.title }}
+                </span>
+                <!--                <div-->
+
+                <!--                    :key="event.id"-->
+                <!--                    class="event-dot"-->
+                <!--                    -->
+                <!--                    :title="event.title"-->
+                <!--                ></div>-->
+              </div>
             </div>
           </template>
-          <el-calendar v-model="calendarDate" class="custom-calendar">
-            <template #date-cell="{ data }">
-              <div class="calendar-day" :class="{ 'is-selected': data.isSelected }">
-                <div class="day-number">{{ data.day.split('-')[2] }}</div>
-                <div class="day-events">
-                  <div
-                      v-for="event in getEventsForDate(data.date)"
-                      :key="event.id"
-                      class="event-dot"
-                      :style="{ backgroundColor: event.color }"
-                      :title="event.title"
-                  ></div>
-                </div>
-              </div>
-            </template>
-          </el-calendar>
-        </el-card>
-      </el-col>
-
+        </el-calendar>
+      </el-card>
+    </el-row>
+    <!-- 技术栈 -->
+    <el-row :gutter="20" class="main-content">
       <el-col :span="14">
         <!-- 技术栈信息 -->
         <el-card class="info-card">
@@ -116,7 +127,7 @@ const currentWeek = computed(() => {
 // 日历事件数据
 const calendarEvents = ref([
   {id: 1, date: '2026-02-10', title: '项目会议', color: '#409eff'},
-  {id: 2, date: '2026-02-12', title: '需求评审', color: '#67c23a'},
+  {id: 2, date: '2026-02-12', title: '需求评审fasdfasdfasdfasdfa', color: '#67c23a'},
   {id: 3, date: '2026-02-15', title: '代码发布', color: '#e6a23c'},
   {id: 4, date: '2026-02-18', title: '团队聚餐', color: '#f56c6c'},
 ])
@@ -264,11 +275,10 @@ onMounted(() => {
 
           .day-events {
             display: flex;
+            width: 100%;
             gap: 2px;
 
             .event-dot {
-              width: 6px;
-              height: 6px;
               border-radius: 50%;
             }
           }

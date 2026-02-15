@@ -7,6 +7,7 @@ import App from './App.vue'
 import router from './router'
 import pinia from './store'
 import setupDirectives from './directives/directives_index.ts'
+import zhCn from 'element-plus/es/locale/lang/zh-cn'
 
 const app = createApp(App)
 
@@ -16,7 +17,9 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 }
 
 // 使用插件
-app.use(ElementPlus)
+app.use(ElementPlus, {
+  locale: zhCn
+})
 app.use(router)
 app.use(pinia)
 
