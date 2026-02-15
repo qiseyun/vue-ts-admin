@@ -10,3 +10,16 @@ export interface SysMenuListVo {
   type: number
   children?: SysMenuListVo[]
 }
+
+/**
+ * 新增或编辑菜单请求参数类型
+ */
+export interface AddOrEditMenuOrButtonEvt {
+  id?: number
+  name: string
+  permission: string
+  parentId: number
+  keepAlive: number
+  type: number
+  describe?: string
+}

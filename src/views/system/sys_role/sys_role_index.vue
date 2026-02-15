@@ -336,7 +336,7 @@ const handlePermission = async (row: SysRoleListVo) => {
   try {
     // 并行获取权限树和角色权限
     const [treeRes, permissionRes] = await Promise.all([
-      getMenuTree({id: 0}),
+      getMenuTree({id: -1}),
       getRolePermissions(row.id)
     ])
     // 设置权限树数据
