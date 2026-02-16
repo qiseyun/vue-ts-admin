@@ -164,7 +164,6 @@ VITE_MOCK_ENABLE=true  # 是否启用 Mock 数据（true/false）
 ## 🎯 系统模块
 
 ### 🏠 首页仪表板
-- 系统信息概览
 
 ### 👥 用户管理
 
