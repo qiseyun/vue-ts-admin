@@ -6,9 +6,12 @@ import axios, {
 } from 'axios'
 import {ElMessage} from 'element-plus'
 
+// 判断是否启用mock
+const isMockEnabled = import.meta.env.VITE_MOCK_ENABLE === 'true'
+
 // 创建axios实例
 const service: AxiosInstance = axios.create({
-  baseURL: '/api',
+  baseURL: isMockEnabled ? '/mock-api' : '/api',
   timeout: 15000,
   headers: {
     'Content-Type': 'application/json;charset=utf-8',
