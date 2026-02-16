@@ -1,4 +1,4 @@
-# mikuyun管理后台
+# vue+ts管理后台
 
 基于 Vue 3 + TypeScript + Element Plus 构建的现代化管理系统前端解决方案。
 
