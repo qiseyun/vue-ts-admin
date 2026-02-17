@@ -30,7 +30,7 @@ const mockMenus = [
         id: 4,
         pid: 1,
         name: '菜单管理',
-        permission: 'sys:menu:list',
+        permission: 'sys:permission:list',
         keepAlive: '1',
         type: 1,
       },
@@ -64,10 +64,10 @@ const mockMenus = [
   },
 ]
 
-const sysMenuMock: MockMethod[] = [
+const sysPermissionsMock: MockMethod[] = [
   // 获取菜单树列表
   {
-    url: '/mock-api/sysMenu/tree',
+    url: '/mock-api/sysPermissions/tree',
     method: 'get',
     response: () => {
       return {
@@ -79,7 +79,7 @@ const sysMenuMock: MockMethod[] = [
   },
   // 新增菜单
   {
-    url: '/mock-api/sysMenu/add',
+    url: '/mock-api/sysPermissions/add',
     method: 'post',
     response: ({body}) => {
       return {
@@ -91,7 +91,7 @@ const sysMenuMock: MockMethod[] = [
   },
   // 编辑菜单
   {
-    url: '/mock-api/sysMenu/update',
+    url: '/mock-api/sysPermissions/update',
     method: 'post',
     response: ({body}) => {
       return {
@@ -103,7 +103,7 @@ const sysMenuMock: MockMethod[] = [
   },
   // 删除菜单
   {
-    url: '/mock-api/sysMenu/del',
+    url: '/mock-api/sysPermissions/del',
     method: 'post',
     response: ({body}) => {
       return {
@@ -115,4 +115,4 @@ const sysMenuMock: MockMethod[] = [
   },
 ]
 
-export default sysMenuMock
+export default sysPermissionsMock

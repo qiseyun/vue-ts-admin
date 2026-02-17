@@ -35,5 +35,5 @@ export const editRolePermissions = (data: EditRPEvt) => {
 
 // 获取角色权限列表
 export const getRolePermissions = (roleId: number) => {
-  return get<ApiResponse<number[]>>(`/sysMenu/rolePermissions/${roleId}`)
+  return get<ApiResponse<number[]>>(`/sysPermissions/rolePermissions/${roleId}`)
 }

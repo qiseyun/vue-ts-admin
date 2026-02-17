@@ -4,7 +4,7 @@ import {type RouteRecordRaw} from 'vue-router'
 const Layout = () => import('@/layout/index.vue')
 const User = () => import('@/views/system/sys_user/sys_user_index.vue')
 const Role = () => import('@/views/system/sys_role/sys_role_index.vue')
-const Menu = () => import('@/views/system/sys_menu/sys_menu_index.vue')
+const Menu = () => import('@/views/system/sys_permissions/sys_permissions_index.vue')
 
 // 权限管理路由配置
 export const permissionRoutes: RouteRecordRaw[] = [

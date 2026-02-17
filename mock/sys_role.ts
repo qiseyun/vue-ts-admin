@@ -119,7 +119,7 @@ const sysRoleMock: MockMethod[] = [
   },
   // 获取角色权限列表
   {
-    url: '/mock-api/sysMenu/rolePermissions/:roleId',
+    url: '/mock-api/sysPermissions/rolePermissions/:roleId',
     method: 'get',
     response: ({query}) => {
       // 模拟返回权限ID列表
