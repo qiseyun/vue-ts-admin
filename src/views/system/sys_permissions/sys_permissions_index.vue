@@ -1,10 +1,10 @@
 <template>
-  <div class="menu-container">
+  <div class="permissions-container">
     <el-card>
       <template #header>
         <div class="card-header">
           <span>权限管理</span>
-          <el-button v-permission="'system:menu:add'" type="primary" icon="Plus" @click="handleAdd">
+          <el-button v-permission="'system:permission:add'" type="primary" icon="Plus" @click="handleAdd">
             新增菜单
           </el-button>
         </div>
@@ -12,7 +12,7 @@
 
       <el-form :inline="true">
         <el-form-item>
-          <el-button type="primary" icon="Search" @click="getMenuList">刷新</el-button>
+          <el-button type="primary" icon="Search" @click="getPermissionList">刷新</el-button>
         </el-form-item>
       </el-form>
 
@@ -47,7 +47,7 @@
         <el-table-column label="操作" width="150" fixed="right">
           <template #default="{ row }">
             <el-button
-                v-permission="'system:menu:edit'"
+                v-permission="'system:permission:edit'"
                 type="primary"
                 size="small"
                 link
@@ -57,7 +57,7 @@
               编辑
             </el-button>
             <el-button
-                v-permission="'system:menu:delete'"
+                v-permission="'system:permission:delete'"
                 type="danger"
                 size="small"
                 link
@@ -141,20 +141,20 @@
 <script setup lang="ts">
 import {onMounted, ref, computed, reactive} from 'vue'
 import {ElMessage, ElMessageBox} from 'element-plus'
-import {getMenuTree, addMenu, updateMenu, deleteMenu} from '@/api/sys_menu'
-import type {SysMenuListVo, AddOrEditMenuOrButtonEvt} from '@/types/sys_menu'
+import {getPermissionsTree, addPermission, updatePermission, deletePermission} from '@/api/sys_permissions.ts'
+import type {SysPermissionListVo, AddOrEditPermissionEvt} from '@/types/sys_permissions.ts'
 import {copyText} from "@/utils/common_utils.ts"
 import type {FormInstance, FormRules} from 'element-plus'
 
 // 使用后端返回的数据结构
-interface MenuItem extends SysMenuListVo {
+interface PermissionItem extends SysPermissionListVo {
   // 可以在这里添加前端需要的额外字段
 }
 
 // 表格数据
-const tableData = ref<MenuItem[]>([])
+const tableData = ref<PermissionItem[]>([])
 // 父级菜单选项
-const addSelectData = ref<MenuItem[]>([])
+const addSelectData = ref<PermissionItem[]>([])
 const loading = ref(false)
 
 // 对话框相关
@@ -165,7 +165,7 @@ const submitLoading = ref(false)
 const formRef = ref<FormInstance>()
 
 // 表单数据
-const formData = reactive<AddOrEditMenuOrButtonEvt>({
+const formData = reactive<AddOrEditPermissionEvt>({
   name: '',
   permission: '',
   parentId: 0,
@@ -204,10 +204,10 @@ const showParentSelect = computed(() => {
 })
 
 // 获取菜单列表
-const getMenuList = async () => {
+const getPermissionList = async () => {
   loading.value = true
   try {
-    const res = await getMenuTree({id: -1})
+    const res = await getPermissionsTree({id: -1})
     tableData.value = res.data || []
     addSelectData.value = res.data || []
   } catch (error) {
@@ -237,7 +237,7 @@ const handleAdd = () => {
 }
 
 // 编辑菜单
-const handleEdit = (row: MenuItem) => {
+const handleEdit = (row: PermissionItem) => {
   isEdit.value = true
   dialogTitle.value = '编辑菜单'
   resetForm()
@@ -252,15 +252,15 @@ const handleEdit = (row: MenuItem) => {
 }
 
 // 删除菜单
-const handleDelete = (row: MenuItem) => {
+const handleDelete = (row: PermissionItem) => {
   ElMessageBox.confirm(`确定要删除菜单 ${row.name} 吗？`, '提示', {
     type: 'warning',
   }).then(async () => {
     try {
       // 这里需要调用删除接口，暂时用成功提示
-      const res = await deleteMenu({id: row.id})
+      const res = await deletePermission({id: row.id})
       ElMessage.success(res.msg || '删除成功')
-      await getMenuList()
+      await getPermissionList()
     } catch (error) {
       ElMessage.error('删除失败')
     }
@@ -278,15 +278,15 @@ const handleSubmit = async () => {
       try {
         if (isEdit.value) {
           // 编辑
-          const res = await updateMenu(formData)
+          const res = await updatePermission(formData)
           ElMessage.success(res.msg || '编辑成功')
         } else {
           // 新增
-          const res = await addMenu(formData)
+          const res = await addPermission(formData)
           ElMessage.success(res.msg || '新增成功')
         }
         dialogVisible.value = false
-        await getMenuList()
+        await getPermissionList()
       } catch (error) {
         console.error('操作失败:', error)
         ElMessage.error(isEdit.value ? '编辑失败' : '新增失败')
@@ -319,12 +319,12 @@ const resetForm = () => {
 }
 
 onMounted(() => {
-  getMenuList()
+  getPermissionList()
 })
 </script>
 
 <style scoped lang="scss">
-.menu-container {
+.permissions-container {
   .card-header {
     display: flex;
     justify-content: space-between;

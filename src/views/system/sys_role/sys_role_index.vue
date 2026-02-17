@@ -178,8 +178,8 @@ import {
   getRolePermissions,
   updateSysRole
 } from '@/api/sys_role.ts'
-import {getMenuTree} from '@/api/sys_menu'
-import type {SysMenuListVo} from '@/types/sys_menu'
+import {getPermissionsTree} from '@/api/sys_permissions.ts'
+import type {SysPermissionListVo} from '@/types/sys_permissions.ts'
 import type {AddSysRoleRequest, SysRoleListVo, SysRoleQuery, UpdateSysRoleRequest} from '@/types/sys_role.ts'
 import type {IdNumberRequest} from '@/types/common_types.ts'
 import {copyText} from "@/utils/common_utils.ts";
@@ -243,7 +243,7 @@ const roleFormRef = ref()
 // 权限管理相关
 const permissionDialogVisible = ref(false)
 const permissionTreeRef = ref()
-const permissionTreeData = ref<SysMenuListVo[]>([])
+const permissionTreeData = ref<SysPermissionListVo[]>([])
 const defaultCheckedKeys = ref<number[]>([])
 const currentRoleId = ref<number>(0)
 const permissionLoading = ref(false)
@@ -336,7 +336,7 @@ const handlePermission = async (row: SysRoleListVo) => {
   try {
     // 并行获取权限树和角色权限
     const [treeRes, permissionRes] = await Promise.all([
-      getMenuTree({id: -1}),
+      getPermissionsTree({id: -1}),
       getRolePermissions(row.id)
     ])
     // 设置权限树数据
