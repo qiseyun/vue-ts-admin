@@ -45,7 +45,7 @@ export const permissionRoutes: RouteRecordRaw[] = [
         meta: {
           title: '权限管理',
           icon: 'Menu',
-          permission: 'system:menu:page_view',
+          permission: 'system:permission:page_view',
         },
       },
     ],

@@ -23,8 +23,8 @@
         <el-table-column prop="id" label="ID" width="60"/>
         <el-table-column prop="username" label="用户名" width="120"/>
         <el-table-column prop="realName" label="真实姓名" width="120"/>
-        <el-table-column prop="phone" label="手机号" width="120"/>
-        <el-table-column prop="email" label="邮箱" width="180">
+        <el-table-column prop="phone" label="手机号" width="150"/>
+        <el-table-column prop="email" label="邮箱">
           <template #default="{ row }">
             <span
                 v-if="row.email"
@@ -37,7 +37,7 @@
             <span v-else>-</span>
           </template>
         </el-table-column>
-        <el-table-column prop="deptId" label="部门ID" width="60"/>
+<!--        <el-table-column prop="deptId" label="部门ID" width="60"/>-->
         <el-table-column label="状态" width="70">
           <template #default="{ row }">
             <el-tag :type="row.lockFlag === 0 ? 'success' : 'danger'">

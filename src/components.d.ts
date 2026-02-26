@@ -55,6 +55,7 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     TagsView: typeof import('./components/TagsView.vue')['default']
   }
+
   export interface GlobalDirectives {
     vLoading: typeof import('element-plus/es')['ElLoadingDirective']
   }

@@ -359,7 +359,7 @@ onUnmounted(() => {
               }
 
               &.zip-cell {
-                width: 150px;
+                width: 250px;
                 flex-shrink: 0;
               }
 
