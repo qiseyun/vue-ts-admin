@@ -110,14 +110,14 @@ const initCanvas = () => {
   canvas.width = window.innerWidth
   canvas.height = window.innerHeight
 
-  // 创建点
-  const pointCount = 80
+  // 创建点 - 增加数量使效果更明显
+  const pointCount = 120
   for (let i = 0; i < pointCount; i++) {
     points.push({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
-      vx: (Math.random() - 0.5) * 0.5,
-      vy: (Math.random() - 0.5) * 0.5,
+      vx: (Math.random() - 0.5) * 1.0, // 增加速度使运动更活跃
+      vy: (Math.random() - 0.5) * 1.0,
     })
   }
 
@@ -138,14 +138,14 @@ const animate = () => {
     if (point.x < 0 || point.x > canvas!.width) point.vx *= -1
     if (point.y < 0 || point.y > canvas!.height) point.vy *= -1
 
-    // 绘制点
+    // 绘制点 - 使用蓝粉色使颜色更明显
     ctx!.beginPath()
-    ctx!.arc(point.x, point.y, 2, 0, Math.PI * 2)
-    ctx!.fillStyle = 'rgba(64, 158, 255, 0.5)'
+    ctx!.arc(point.x, point.y, 3, 0, Math.PI * 2) // 增大点半径
+    ctx!.fillStyle = 'rgba(255, 105, 180, 0.8)' // 粉色点
     ctx!.fill()
   })
 
-  // 绘制连线
+  // 绘制连线 - 扩大连接范围并增强视觉效果
   for (let i = 0; i < points.length; i++) {
     for (let j = i + 1; j < points.length; j++) {
       const pointI = points[i]
@@ -156,12 +156,14 @@ const animate = () => {
       const dy = pointI.y - pointJ.y
       const distance = Math.sqrt(dx * dx + dy * dy)
 
-      if (distance < 150) {
+      if (distance < 200) { // 增大连接距离
         ctx!.beginPath()
         ctx!.moveTo(pointI.x, pointI.y)
         ctx!.lineTo(pointJ.x, pointJ.y)
-        ctx!.strokeStyle = `rgba(64, 158, 255, ${0.2 * (1 - distance / 150)})`
-        ctx!.lineWidth = 1
+        // 使用蓝粉色渐变效果
+        const opacity = 0.3 * (1 - distance / 200)
+        ctx!.strokeStyle = `rgba(65, 105, 225, ${opacity})` // 蓝色连线
+        ctx!.lineWidth = 1.5 // 增加线宽
         ctx!.stroke()
       }
     }
@@ -195,7 +197,7 @@ onUnmounted(() => {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #667eea 0%, #ff758c 100%); /* 蓝粉渐变 */
   display: flex;
   align-items: center;
   justify-content: center;
