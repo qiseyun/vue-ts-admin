@@ -113,8 +113,8 @@
 
         <el-form-item label="状态" prop="keepAlive">
           <el-radio-group v-model="formData.keepAlive">
-            <el-radio :label="0">开启</el-radio>
-            <el-radio :label="1">关闭</el-radio>
+            <el-radio :value="0">开启</el-radio>
+            <el-radio :value="1">关闭</el-radio>
           </el-radio-group>
         </el-form-item>
 

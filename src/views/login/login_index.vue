@@ -116,8 +116,8 @@ const initCanvas = () => {
     points.push({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
-      vx: (Math.random() - 0.5) * 1.0, // 增加速度使运动更活跃
-      vy: (Math.random() - 0.5) * 1.0,
+      vx: (Math.random() - 0.5), // 增加速度使运动更活跃
+      vy: (Math.random() - 0.5),
     })
   }
 
@@ -141,7 +141,7 @@ const animate = () => {
     // 绘制点 - 使用蓝粉色使颜色更明显
     ctx!.beginPath()
     ctx!.arc(point.x, point.y, 3, 0, Math.PI * 2) // 增大点半径
-    ctx!.fillStyle = 'rgba(255, 105, 180, 0.8)' // 粉色点
+    ctx!.fillStyle = 'rgb(255 114 185)' // 粉色点
     ctx!.fill()
   })
 
@@ -197,7 +197,7 @@ onUnmounted(() => {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  background: linear-gradient(135deg, #667eea 0%, #ff758c 100%); /* 蓝粉渐变 */
+  background: linear-gradient(135deg, #a6b5ff 0%, #ffc5d2 100%); /* 蓝粉渐变 */
   display: flex;
   align-items: center;
   justify-content: center;
