@@ -6,6 +6,7 @@ import sysRoleMock from './sys_role'
 import commonMock from './common'
 import regionMock from './region'
 import sysConfigMock from './sys_config'
+import sysDictMock from './sys_dict'
 
 export default [
   ...authMock,
@@ -15,4 +16,5 @@ export default [
   ...commonMock,
   ...regionMock,
   ...sysConfigMock,
+  ...sysDictMock,
 ] as MockMethod[]
