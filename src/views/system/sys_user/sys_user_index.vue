@@ -41,7 +41,7 @@
         <el-table-column label="状态" width="70">
           <template #default="{ row }">
             <el-tag :type="row.lockFlag === 0 ? 'success' : 'danger'">
-              {{ row.lockFlag === 0 ? '正常' : '锁定' }}
+              {{ getDictLabel('lock_flag', row.lockFlag ? '1' : '0') }}
             </el-tag>
           </template>
         </el-table-column>
@@ -197,6 +197,7 @@ import {getRoleList} from '@/api/sys_role.ts'
 import type {SysUserListVo, AddSysUserEvt, UpdateSysUserEvt} from "@/types/sys_user.ts";
 import type {IdNumberRequest} from "@/types/common_types.ts";
 import {copyText} from "@/utils/common_utils.ts";
+import {fetchDictMap, getDictLabel} from "@/utils/dict_utils.ts";
 
 interface UserQuery {
   phone?: string
@@ -457,6 +458,7 @@ const handleRoleSubmit = async () => {
 }
 
 onMounted(() => {
+  fetchDictMap('lock_flag')
   fetchUserList()
 })
 </script>

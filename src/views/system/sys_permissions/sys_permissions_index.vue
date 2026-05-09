@@ -40,7 +40,7 @@
         <el-table-column label="状态" width="70">
           <template #default="{ row }">
             <el-tag :type="row.keepAlive === 0 ? 'success' : 'info'">
-              {{ row.keepAlive === 0 ? '开启' : '关闭' }}
+              {{ getDictLabel('keep_alive', row.keepAlive) }}
             </el-tag>
           </template>
         </el-table-column>
@@ -113,8 +113,7 @@
 
         <el-form-item label="状态" prop="keepAlive">
           <el-radio-group v-model="formData.keepAlive">
-            <el-radio :label="0">开启</el-radio>
-            <el-radio :label="1">关闭</el-radio>
+            <el-radio v-for="item in getDictOptions('keep_alive')" :label="item.enumCode">{{ item.enumName }}</el-radio>
           </el-radio-group>
         </el-form-item>
 
@@ -145,6 +144,7 @@ import {getPermissionsTree, addPermission, updatePermission, deletePermission} f
 import type {SysPermissionListVo, AddOrEditPermissionEvt} from '@/types/sys_permissions.ts'
 import {copyText} from "@/utils/common_utils.ts"
 import type {FormInstance, FormRules} from 'element-plus'
+import {fetchDictMap, getDictLabel, getDictOptions} from "@/utils/dict_utils.ts";
 
 // 使用后端返回的数据结构
 interface PermissionItem extends SysPermissionListVo {
@@ -319,6 +319,7 @@ const resetForm = () => {
 }
 
 onMounted(() => {
+  fetchDictMap('keep_alive')
   getPermissionList()
 })
 </script>

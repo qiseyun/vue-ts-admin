@@ -63,10 +63,11 @@
             <span v-else>-</span>
           </template>
         </el-table-column>
-        <el-table-column prop="isLock" label="锁定" width="60">
+        <el-table-column prop="isLock" label="锁定" width="85">
           <template #default="{ row }">
-            <el-tag v-if="row.isLock === 1" type="danger">是</el-tag>
-            <el-tag v-else type="success">否</el-tag>
+            <el-tag :type="row.isLock === 0 ? 'success' : 'danger'">
+              {{ getDictLabel('is_lock', row.isLock) }}
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="remark" label="备注" show-overflow-tooltip/>
@@ -146,8 +147,7 @@
         </el-form-item>
         <el-form-item label="是否锁定" prop="isLock">
           <el-radio-group v-model="form.isLock">
-            <el-radio :value="0">否</el-radio>
-            <el-radio :value="1">是</el-radio>
+            <el-radio v-for="item in getDictOptions('is_lock')" :label="item.enumCode">{{ item.enumName }}</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
@@ -179,6 +179,7 @@ import type {
   AddSysConfigRequest,
   UpdateSysConfigRequest
 } from '@/types/sys_config.ts'
+import {fetchDictMap, getDictLabel, getDictOptions} from "@/utils/dict_utils.ts";
 
 interface SysConfigQuery {
   configName?: string
@@ -363,6 +364,7 @@ const handleCancel = () => {
 }
 
 onMounted(() => {
+  fetchDictMap('is_lock')
   fetchList()
 })
 </script>

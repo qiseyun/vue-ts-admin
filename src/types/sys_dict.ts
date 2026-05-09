@@ -21,6 +21,7 @@ export interface DictEnumVo {
   sort: number
   remark: string
   isLock: boolean
+  isDelete: number
 }
 
 // 字典 Map（key 为 dictTypeCode）

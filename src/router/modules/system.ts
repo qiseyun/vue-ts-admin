@@ -45,7 +45,7 @@ export const systemRoutes: RouteRecordRaw[] = [
         meta: {
           title: '字典管理',
           icon: 'Notebook',
-          permission: 'system:dict:page_view',
+          permission: 'system:dict_type:page_view',
         },
       },
     ],

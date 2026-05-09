@@ -4,7 +4,7 @@
       <template #header>
         <div class="card-header">
           <span>字典管理</span>
-          <el-button v-permission="'system:dict:add'" type="primary" icon="Plus" @click="handleAddType">
+          <el-button v-permission="'system:dict_type:add'" type="primary" icon="Plus" @click="handleAddType">
             新增字典类型
           </el-button>
         </div>
@@ -12,10 +12,10 @@
 
       <el-form :inline="true" :model="searchForm">
         <el-form-item label="类型名称">
-          <el-input v-model="searchForm.typeName" placeholder="请输入类型名称" clearable />
+          <el-input v-model="searchForm.typeName" placeholder="请输入类型名称" clearable/>
         </el-form-item>
         <el-form-item label="类型编码">
-          <el-input v-model="searchForm.typeCode" placeholder="请输入类型编码" clearable />
+          <el-input v-model="searchForm.typeCode" placeholder="请输入类型编码" clearable/>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" icon="Search" @click="handleSearch">搜索</el-button>
@@ -24,12 +24,12 @@
       </el-form>
 
       <el-table
-        v-loading="loading"
-        :data="tableData"
-        border
-        stripe
-        row-key="id"
-        @expand-change="handleExpandChange"
+          v-loading="loading"
+          :data="tableData"
+          border
+          stripe
+          row-key="id"
+          @expand-change="handleExpandChange"
       >
         <el-table-column type="expand">
           <template #default="{ row }">
@@ -37,54 +37,62 @@
               <div class="expand-header">
                 <span class="expand-title">{{ row.typeName }} - 字典列表</span>
                 <el-button
-                  v-permission="'system:dict:add'"
-                  type="primary"
-                  size="small"
-                  icon="Plus"
-                  @click="handleAddEnum(row)"
+                    v-permission="'system:dict:add'"
+                    type="primary"
+                    size="small"
+                    icon="Plus"
+                    @click="handleAddEnum(row)"
                 >
                   新增字典项
                 </el-button>
               </div>
               <el-table
-                v-loading="row._enumLoading"
-                :data="row._enumData"
-                border
-                size="small"
+                  v-loading="row._enumLoading"
+                  :data="row._enumData"
+                  border
+                  size="small"
               >
-                <el-table-column prop="id" label="ID" width="60" />
-                <el-table-column prop="enumName" label="枚举名称" width="150" />
-                <el-table-column prop="enumCode" label="枚举值" width="120" />
-                <el-table-column prop="sort" label="排序" width="80" />
-                <el-table-column prop="remark" label="备注" />
-                <el-table-column label="锁定" width="80">
+                <el-table-column prop="id" label="ID" width="60"/>
+                <el-table-column prop="enumName" label="枚举名称" width="150"/>
+                <el-table-column prop="enumCode" label="枚举值" width="120"/>
+                <el-table-column prop="sort" label="排序" width="80"/>
+                <el-table-column prop="remark" label="备注"/>
+                <el-table-column label="删除状态" width="100">
                   <template #default="{ row: enumRow }">
-                    <el-tag :type="enumRow.isLock ? 'warning' : 'success'" size="small">
-                      {{ getDictLabel('is_lock', enumRow.isLock ? '1' : '0') }}
+                    <el-tag :type="enumRow.isDelete === 0 ? 'success' : 'danger'" size="small">
+                      {{ getDictLabel('is_delete', enumRow.isDelete) }}
                     </el-tag>
                   </template>
                 </el-table-column>
-                <el-table-column label="操作" width="160" fixed="right">
+                <el-table-column label="锁定" width="80">
+                  <template #default="{ row: enumRow }">
+                    <el-tag :type="enumRow.isLock === 1 ? 'warning' : 'success'" size="small">
+                      {{ getDictLabel('is_lock', enumRow.isLock) }}
+                    </el-tag>
+                  </template>
+                </el-table-column>
+                <el-table-column label="操作" width="180" fixed="right">
                   <template #default="{ row: enumRow }">
                     <el-button
-                      v-permission="'system:dict:edit'"
-                      type="primary"
-                      size="small"
-                      link
-                      icon="Edit"
-                      @click="handleEditEnum(row, enumRow)"
+                        v-permission="'system:dict:update'"
+                        type="primary"
+                        size="small"
+                        link
+                        icon="Edit"
+                        :disabled="enumRow.isDelete !== 0"
+                        @click="handleEditEnum(row, enumRow)"
                     >
                       编辑
                     </el-button>
                     <el-button
-                      v-permission="'system:dict:delete'"
-                      type="danger"
-                      size="small"
-                      link
-                      icon="Delete"
-                      @click="handleDeleteEnum(enumRow)"
+                        v-permission="'system:dict:del'"
+                        :type="enumRow.isDelete !== 0 ? 'success' : 'danger'"
+                        size="small"
+                        link
+                        :icon="enumRow.isDelete !== 0 ? 'Refresh' : 'Delete'"
+                        @click="handleToggleEnum(enumRow)"
                     >
-                      删除
+                      {{ enumRow.isDelete !== 0 ? '恢复' : '删除' }}
                     </el-button>
                   </template>
                 </el-table-column>
@@ -92,82 +100,83 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="id" label="ID" width="60" />
-        <el-table-column prop="typeName" label="类型名称" width="150" />
-        <el-table-column prop="typeCode" label="类型编码" width="150" />
-        <el-table-column prop="remark" label="备注" />
+        <el-table-column prop="id" label="ID" width="60"/>
+        <el-table-column prop="typeName" label="类型名称" width="150"/>
+        <el-table-column prop="typeCode" label="类型编码" width="150"/>
+        <el-table-column prop="remark" label="备注"/>
         <el-table-column label="删除状态" width="100">
           <template #default="{ row }">
             <el-tag :type="row.isDelete === 0 ? 'success' : 'danger'" size="small">
-              {{ getDictLabel('is_delete', String(row.isDelete)) }}
+              {{ getDictLabel('is_delete', row.isDelete) }}
             </el-tag>
           </template>
         </el-table-column>
         <el-table-column label="锁定" width="80">
           <template #default="{ row }">
-            <el-tag :type="row.isLock ? 'warning' : 'success'" size="small">
-              {{ getDictLabel('is_lock', row.isLock ? '1' : '0') }}
+            <el-tag :type="row.isLock === 1 ? 'warning' : 'success'" size="small">
+              {{ getDictLabel('is_lock', row.isLock) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="gmtCreated" label="创建时间" width="180" />
-        <el-table-column label="操作" width="160" fixed="right">
+        <el-table-column prop="gmtCreated" label="创建时间" width="180"/>
+        <el-table-column label="操作" width="180" fixed="right">
           <template #default="{ row }">
             <el-button
-              v-permission="'system:dict:edit'"
-              type="primary"
-              size="small"
-              link
-              icon="Edit"
-              @click="handleEditType(row)"
+                v-permission="'system:dict_type:update'"
+                type="primary"
+                size="small"
+                link
+                icon="Edit"
+                :disabled="row.isDelete !== 0"
+                @click="handleEditType(row)"
             >
               编辑
             </el-button>
             <el-button
-              v-permission="'system:dict:delete'"
-              type="danger"
-              size="small"
-              link
-              icon="Delete"
-              @click="handleDeleteType(row)"
+                v-permission="'system:dict_type:del'"
+                :type="row.isDelete !== 0 ? 'success' : 'danger'"
+                size="small"
+                link
+                :icon="row.isDelete !== 0 ? 'Refresh' : 'Delete'"
+                @click="handleToggleType(row)"
             >
-              删除
+              {{ row.isDelete !== 0 ? '恢复' : '删除' }}
             </el-button>
           </template>
         </el-table-column>
       </el-table>
 
       <el-pagination
-        v-model:current-page="pagination.page"
-        v-model:page-size="pagination.size"
-        :total="pagination.total"
-        :page-sizes="[10, 20, 50, 100]"
-        layout="sizes, prev, pager, next, jumper"
-        style="margin-top: 20px; justify-content: flex-end"
-        @size-change="handleSearch"
-        @current-change="handleSearch"
+          v-model:current-page="pagination.page"
+          v-model:page-size="pagination.size"
+          :total="pagination.total"
+          :page-sizes="[10, 20, 50, 100]"
+          layout="sizes, prev, pager, next, jumper"
+          style="margin-top: 20px; justify-content: flex-end"
+          @size-change="handleSizeChange"
+          @current-change="fetchDictTypeList"
       />
     </el-card>
 
     <!-- 新增/编辑字典类型弹窗 -->
     <el-dialog
-      v-model="typeDialogVisible"
-      :title="typeDialogTitle"
-      width="500px"
-      :close-on-click-modal="false"
+        v-model="typeDialogVisible"
+        :title="typeDialogTitle"
+        width="500px"
+        :close-on-click-modal="false"
     >
       <el-form ref="typeFormRef" :model="typeFormData" :rules="typeFormRules" label-width="100px">
         <el-form-item label="类型名称" prop="typeName">
-          <el-input v-model="typeFormData.typeName" placeholder="请输入类型名称" maxlength="50" />
+          <el-input v-model="typeFormData.typeName" placeholder="请输入类型名称" maxlength="50"/>
         </el-form-item>
         <el-form-item label="类型编码" prop="typeCode">
-          <el-input v-model="typeFormData.typeCode" placeholder="请输入类型编码" maxlength="50" />
+          <el-input v-model="typeFormData.typeCode" placeholder="请输入类型编码" maxlength="50"/>
         </el-form-item>
         <el-form-item label="备注">
-          <el-input v-model="typeFormData.remark" placeholder="请输入备注" maxlength="200" type="textarea" />
+          <el-input v-model="typeFormData.remark" placeholder="请输入备注" maxlength="200" type="textarea"/>
         </el-form-item>
         <el-form-item label="是否锁定">
-          <el-switch v-model="typeFormData.isLock" />
+          <el-switch v-model="typeFormData.isLock"/>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -180,26 +189,26 @@
 
     <!-- 新增/编辑字典枚举弹窗 -->
     <el-dialog
-      v-model="enumDialogVisible"
-      :title="enumDialogTitle"
-      width="500px"
-      :close-on-click-modal="false"
+        v-model="enumDialogVisible"
+        :title="enumDialogTitle"
+        width="500px"
+        :close-on-click-modal="false"
     >
       <el-form ref="enumFormRef" :model="enumFormData" :rules="enumFormRules" label-width="100px">
         <el-form-item label="枚举名称" prop="enumName">
-          <el-input v-model="enumFormData.enumName" placeholder="请输入枚举名称" maxlength="50" />
+          <el-input v-model="enumFormData.enumName" placeholder="请输入枚举名称" maxlength="50"/>
         </el-form-item>
         <el-form-item label="枚举值" prop="enumCode">
-          <el-input v-model="enumFormData.enumCode" placeholder="请输入枚举值" maxlength="50" />
+          <el-input v-model="enumFormData.enumCode" placeholder="请输入枚举值" maxlength="50"/>
         </el-form-item>
         <el-form-item label="排序">
-          <el-input-number v-model="enumFormData.sort" :min="0" :max="9999" />
+          <el-input-number v-model="enumFormData.sort" :min="0" :max="9999"/>
         </el-form-item>
         <el-form-item label="备注">
-          <el-input v-model="enumFormData.remark" placeholder="请输入备注" maxlength="200" type="textarea" />
+          <el-input v-model="enumFormData.remark" placeholder="请输入备注" maxlength="200" type="textarea"/>
         </el-form-item>
         <el-form-item label="是否锁定">
-          <el-switch v-model="enumFormData.isLock" />
+          <el-switch v-model="enumFormData.isLock"/>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -213,8 +222,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import {ref, onMounted} from 'vue'
+import {ElMessage, ElMessageBox} from 'element-plus'
 import {
   getDictTypeList,
   addDictType,
@@ -225,9 +234,8 @@ import {
   updateDictEnum,
   deleteDictEnum,
 } from '@/api/sys_dict'
-import type { DictTypeVo, DictEnumVo, SaveDictTypeEvt, SaveDictEnumEvt } from '@/types/sys_dict'
-import type { IdNumberRequest } from '@/types/common_types'
-import { fetchDictMap, getDictLabel } from '@/utils/dict_utils'
+import type {DictTypeVo, DictEnumVo, SaveDictTypeEvt, SaveDictEnumEvt} from '@/types/sys_dict'
+import {fetchDictMap, getDictLabel} from '@/utils/dict_utils'
 
 interface DictTypeRow extends DictTypeVo {
   _enumData: DictEnumVo[]
@@ -267,8 +275,8 @@ const fetchDictTypeList = async () => {
       _expanded: false,
     }))
     pagination.value.total = list.length === pagination.value.size
-      ? (pagination.value.page + 1) * pagination.value.size
-      : (pagination.value.page - 1) * pagination.value.size + list.length
+        ? (pagination.value.page + 1) * pagination.value.size
+        : (pagination.value.page - 1) * pagination.value.size + list.length
   } catch {
     ElMessage.error('获取字典类型列表失败')
   } finally {
@@ -318,8 +326,8 @@ const typeFormData = ref<SaveDictTypeEvt & { isLock: boolean }>({
 })
 
 const typeFormRules = {
-  typeName: [{ required: true, message: '请输入类型名称', trigger: 'blur' }],
-  typeCode: [{ required: true, message: '请输入类型编码', trigger: 'blur' }],
+  typeName: [{required: true, message: '请输入类型名称', trigger: 'blur'}],
+  typeCode: [{required: true, message: '请输入类型编码', trigger: 'blur'}],
 }
 
 const handleAddType = () => {
@@ -327,7 +335,7 @@ const handleAddType = () => {
   typeDialogTitle.value = '新增字典类型'
   typeDialogVisible.value = true
   setTimeout(() => {
-    typeFormData.value = { typeName: '', typeCode: '', remark: '', isLock: false }
+    typeFormData.value = {typeName: '', typeCode: '', remark: '', isLock: false}
     typeFormRef.value?.clearValidate()
   }, 0)
 }
@@ -351,11 +359,15 @@ const handleEditType = (row: DictTypeRow) => {
 const handleTypeSubmit = async () => {
   await typeFormRef.value.validate()
   try {
+    const typeSubmitData = {
+      ...typeFormData.value,
+      isLock: typeFormData.value.isLock ? 1 : 0,
+    }
     if (isEditType.value) {
-      await updateDictType(typeFormData.value)
+      await updateDictType(typeSubmitData)
       ElMessage.success('编辑字典类型成功')
     } else {
-      await addDictType(typeFormData.value)
+      await addDictType(typeSubmitData)
       ElMessage.success('新增字典类型成功')
     }
     typeDialogVisible.value = false
@@ -367,25 +379,31 @@ const handleTypeSubmit = async () => {
   }
 }
 
-const handleDeleteType = async (row: DictTypeRow) => {
+const handleToggleType = async (row: DictTypeRow) => {
+  const isRestore = row.isDelete !== 0
+  const actionText = isRestore ? '恢复' : '删除'
   try {
-    await ElMessageBox.confirm(`确定要删除字典类型 ${row.typeName} 吗？`, '提示', {
+    await ElMessageBox.confirm(`确定要${actionText}字典类型 ${row.typeName} 吗？`, '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
-      type: 'warning',
+      type: isRestore ? 'info' : 'warning',
     })
-    const deleteParams: IdNumberRequest = { id: row.id }
-    await deleteDictType(deleteParams)
-    ElMessage.success('删除字典类型成功')
-    if (tableData.value.length === 1 && pagination.value.page > 1) {
+    await deleteDictType({id: row.id})
+    ElMessage.success(`${actionText}字典类型成功`)
+    if (!isRestore && tableData.value.length === 1 && pagination.value.page > 1) {
       pagination.value.page--
     }
     await fetchDictTypeList()
   } catch (error: any) {
     if (error !== 'cancel') {
-      ElMessage.error(error.message || '删除失败')
+      ElMessage.error(error.message || `${actionText}失败`)
     }
   }
+}
+
+const handleSizeChange = () => {
+  pagination.value.page = 1
+  fetchDictTypeList()
 }
 
 // ========== 字典枚举 CRUD ==========
@@ -405,8 +423,8 @@ const enumFormData = ref<SaveDictEnumEvt & { isLock: boolean }>({
 const currentEnumTypeRow = ref<DictTypeRow | null>(null)
 
 const enumFormRules = {
-  enumName: [{ required: true, message: '请输入枚举名称', trigger: 'blur' }],
-  enumCode: [{ required: true, message: '请输入枚举值', trigger: 'blur' }],
+  enumName: [{required: true, message: '请输入枚举名称', trigger: 'blur'}],
+  enumCode: [{required: true, message: '请输入枚举值', trigger: 'blur'}],
 }
 
 const handleAddEnum = (row: DictTypeRow) => {
@@ -451,11 +469,15 @@ const handleEditEnum = (typeRow: DictTypeRow, enumRow: DictEnumVo) => {
 const handleEnumSubmit = async () => {
   await enumFormRef.value.validate()
   try {
+    const enumSubmitData = {
+      ...enumFormData.value,
+      isLock: enumFormData.value.isLock ? 1 : 0,
+    }
     if (isEditEnum.value) {
-      await updateDictEnum(enumFormData.value)
+      await updateDictEnum(enumSubmitData)
       ElMessage.success('编辑字典项成功')
     } else {
-      await addDictEnum(enumFormData.value)
+      await addDictEnum(enumSubmitData)
       ElMessage.success('新增字典项成功')
     }
     enumDialogVisible.value = false
@@ -476,17 +498,17 @@ const handleEnumSubmit = async () => {
   }
 }
 
-const handleDeleteEnum = async (enumRow: DictEnumVo) => {
+const handleToggleEnum = async (enumRow: DictEnumVo) => {
+  const isRestore = enumRow.isDelete !== 0
+  const actionText = isRestore ? '恢复' : '删除'
   try {
-    await ElMessageBox.confirm(`确定要删除字典项 ${enumRow.enumName} 吗？`, '提示', {
+    await ElMessageBox.confirm(`确定要${actionText}字典项 ${enumRow.enumName} 吗？`, '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
-      type: 'warning',
+      type: isRestore ? 'info' : 'warning',
     })
-    const deleteParams: IdNumberRequest = { id: enumRow.id }
-    await deleteDictEnum(deleteParams)
-    ElMessage.success('删除字典项成功')
-    // 刷新对应类型的枚举列表
+    await deleteDictEnum({id: enumRow.id})
+    ElMessage.success(`${actionText}字典项成功`)
     const typeRow = tableData.value.find((r) => r.typeCode === enumRow.dictTypeCode)
     if (typeRow) {
       typeRow._enumLoading = true
@@ -496,7 +518,7 @@ const handleDeleteEnum = async (enumRow: DictEnumVo) => {
     }
   } catch (error: any) {
     if (error !== 'cancel') {
-      ElMessage.error(error.message || '删除失败')
+      ElMessage.error(error.message || `${actionText}失败`)
     }
   }
 }
