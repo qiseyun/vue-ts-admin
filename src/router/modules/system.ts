@@ -4,6 +4,7 @@ import {type RouteRecordRaw} from 'vue-router'
 const Layout = () => import('@/layout/index.vue')
 const Setting = () => import('@/views/system/sys_config/sys_config_index.vue')
 const Region = () => import('@/views/system/sys_region/sys_region_index.vue')
+const Dict = () => import('@/views/system/sys_dict/sys_dict_index.vue')
 
 // 系统管理路由配置
 export const systemRoutes: RouteRecordRaw[] = [
@@ -35,6 +36,16 @@ export const systemRoutes: RouteRecordRaw[] = [
           title: '城市地区信息',
           icon: 'Location',
           permission: 'system:region:page_view',
+        },
+      },
+      {
+        path: '/system/dict',
+        name: 'Dict',
+        component: Dict,
+        meta: {
+          title: '字典管理',
+          icon: 'Notebook',
+          permission: 'system:dict_type:page_view',
         },
       },
     ],
