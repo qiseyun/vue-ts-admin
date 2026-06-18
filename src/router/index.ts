@@ -7,6 +7,7 @@ import {coreRoutes} from './modules/core'
 import {dashboardRoutes} from './modules/dashboard'
 import {permissionRoutes} from './modules/permission'
 import {systemRoutes} from './modules/system'
+import {flowRoutes} from './modules/flow'
 
 // 合并所有路由
 const routes: RouteRecordRaw[] = [
@@ -14,6 +15,7 @@ const routes: RouteRecordRaw[] = [
   ...dashboardRoutes,
   ...permissionRoutes,
   ...systemRoutes,
+  ...flowRoutes
 ]
 
 

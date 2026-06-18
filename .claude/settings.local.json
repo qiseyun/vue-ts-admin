@@ -2,7 +2,14 @@
   "permissions": {
     "allow": [
       "Bash(npx vue-tsc *)",
-      "Bash(timeout 15 pnpm dev)"
+      "Bash(timeout 15 pnpm dev)",
+      "WebSearch",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:www.warm-flow.cn)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:warm-flow.dromara.org)",
+      "Bash(pnpm run *)",
+      "Bash(pnpm exec *)"
     ]
   }
 }
