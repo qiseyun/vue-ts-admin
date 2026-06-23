@@ -72,7 +72,7 @@
                 size="small"
                 link
                 icon="Edit"
-                @click="handleDesign(row.id)"
+                @click="handleDesign(row.id, row.isPublish)"
             >
               设计
             </el-button>
@@ -210,12 +210,14 @@ const handleReset = () => {
 const handleSizeChange = () => { pagination.value.page = 1; fetchData() }
 
 // ========== 流程设计器 ==========
-const handleDesign = (definitionId?: number) => {
+const handleDesign = (definitionId?: string, isPublish?: number) => {
   const query: Record<string, string> = {}
   if (definitionId) {
-    query.id = String(definitionId)
-    // 已发布的状态下进入设计器为只读
-    query.disabled = 'true'
+    query.id = definitionId
+    // 已发布状态下进入设计器为只读；未发布可编辑
+    if (isPublish === 1) {
+      query.disabled = 'true'
+    }
   }
   router.push({ path: '/flow/warmFlow', query })
 }

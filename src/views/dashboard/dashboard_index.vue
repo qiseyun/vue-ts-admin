@@ -89,15 +89,65 @@
           </el-descriptions>
         </el-card>
       </el-col>
+
+      <!-- WebSocket 测试 -->
+      <el-col :span="10">
+        <el-card class="ws-card">
+          <template #header>
+            <div class="card-header">
+              <span>🔌 WebSocket 测试</span>
+              <el-tag :type="wsConnected ? 'success' : 'danger'" size="small">
+                {{ wsConnected ? '已连接' : '未连接' }}
+              </el-tag>
+            </div>
+          </template>
+          <div class="ws-test-area">
+            <!-- 消息记录 -->
+            <div ref="msgBoxRef" class="ws-message-box">
+              <div v-if="messages.length === 0" class="ws-empty">暂无消息，试试发送一条吧~</div>
+              <div
+                  v-for="(msg, index) in messages"
+                  :key="index"
+                  class="ws-message-item"
+                  :class="msg.type"
+              >
+                <span class="ws-msg-time">{{ msg.time }}</span>
+                <span class="ws-msg-tag">{{ msg.type === 'sent' ? '发送' : '接收' }}</span>
+                <span class="ws-msg-text">{{ msg.content }}</span>
+              </div>
+            </div>
+            <!-- 发送区域 -->
+            <div class="ws-send-area">
+              <el-input
+                  v-model="inputMsg"
+                  placeholder="输入消息内容..."
+                  clearable
+                  @keyup.enter="handleSend"
+              >
+                <template #append>
+                  <el-button
+                      type="primary"
+                      :disabled="!wsConnected"
+                      :loading="sending"
+                      @click="handleSend"
+                  >
+                    发送
+                  </el-button>
+                </template>
+              </el-input>
+            </div>
+          </div>
+        </el-card>
+      </el-col>
     </el-row>
   </div>
 </template>
 
 <script setup lang="ts">
-import {ref, computed, onMounted} from 'vue'
+import {ref, computed, onMounted, onUnmounted, nextTick} from 'vue'
 import {useUserStore} from '@/store/user'
 import {getAppTitle} from '@/utils/env.ts'
-
+import {wsService} from '@/utils/websocket'
 
 const userStore = useUserStore()
 const userInfo = computed(() => userStore.userInfo)
@@ -141,9 +191,79 @@ const handleToday = () => {
   calendarDate.value = new Date()
 }
 
+// ===== WebSocket 测试 =====
+interface WsMessage {
+  time: string
+  type: 'sent' | 'received'
+  content: string
+}
+
+const messages = ref<WsMessage[]>([])
+const inputMsg = ref('')
+const sending = ref(false)
+const wsConnected = ref(false)
+const msgBoxRef = ref<HTMLElement | null>(null)
+let unregisterHandler: (() => void) | null = null
+
+// 格式化时间
+const formatTime = () => {
+  const now = new Date()
+  return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`
+}
+
+// 添加消息并滚动到底部
+const addMessage = (msg: WsMessage) => {
+  messages.value.push(msg)
+  nextTick(() => {
+    if (msgBoxRef.value) {
+      msgBoxRef.value.scrollTop = msgBoxRef.value.scrollHeight
+    }
+  })
+}
+
+// 发送消息
+const handleSend = () => {
+  const text = inputMsg.value.trim()
+  if (!text || !wsConnected.value) return
+
+  sending.value = true
+  try {
+    wsService.send(text)
+    addMessage({ time: formatTime(), type: 'sent', content: text })
+    inputMsg.value = ''
+  } catch (e) {
+    console.error('发送失败:', e)
+  } finally {
+    sending.value = false
+  }
+}
+
+// 轮询检测连接状态
+let statusTimer: ReturnType<typeof setInterval> | null = null
+
+const checkStatus = () => {
+  wsConnected.value = wsService.isConnected
+}
+
 onMounted(() => {
-  // 可以在这里初始化数据或调用API获取实时数据
+  // 初始状态
+  checkStatus()
+
+  // 定时刷新连接状态
+  statusTimer = setInterval(checkStatus, 1000)
+
+  // 注册消息接收
+  unregisterHandler = wsService.onMessage((data) => {
+    const content = typeof data === 'string' ? data : JSON.stringify(data, null, 2)
+    addMessage({ time: formatTime(), type: 'received', content })
+  })
+
   console.log('仪表板已加载')
+})
+
+onUnmounted(() => {
+  if (statusTimer) clearInterval(statusTimer)
+  if (unregisterHandler) unregisterHandler()
 })
 </script>
 
@@ -303,6 +423,92 @@ onMounted(() => {
       }
     }
 
+    // WebSocket 测试卡片
+    .ws-card {
+      margin-bottom: 20px;
+      border-radius: 12px;
+
+      :deep(.el-card__header) {
+        background: linear-gradient(90deg, #409eff 0%, #67c23a 100%);
+        color: white;
+        border: none;
+        font-weight: 600;
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .ws-test-area {
+        .ws-message-box {
+          height: 240px;
+          overflow-y: auto;
+          border: 1px solid #ebeef5;
+          border-radius: 8px;
+          padding: 12px;
+          margin-bottom: 12px;
+          background: #fafafa;
+
+          .ws-empty {
+            color: #909399;
+            text-align: center;
+            padding-top: 90px;
+            font-size: 13px;
+          }
+
+          .ws-message-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 6px 0;
+            font-size: 13px;
+            font-family: 'Consolas', 'Monaco', monospace;
+
+            + .ws-message-item {
+              border-top: 1px dashed #ebeef5;
+            }
+
+            .ws-msg-time {
+              color: #909399;
+              white-space: nowrap;
+              min-width: 70px;
+            }
+
+            .ws-msg-tag {
+              display: inline-block;
+              padding: 1px 6px;
+              border-radius: 3px;
+              font-size: 11px;
+              white-space: nowrap;
+              min-width: 32px;
+              text-align: center;
+            }
+
+            .ws-msg-text {
+              color: #303133;
+              word-break: break-all;
+              flex: 1;
+            }
+
+            &.sent {
+              .ws-msg-tag {
+                background: #ecf5ff;
+                color: #409eff;
+              }
+            }
+
+            &.received {
+              .ws-msg-tag {
+                background: #f0f9eb;
+                color: #67c23a;
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }
 

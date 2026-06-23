@@ -90,6 +90,8 @@
       <el-descriptions v-if="detailRow" :column="2" border>
         <el-descriptions-item label="流程名称">{{ detailRow.flowName || '-' }}</el-descriptions-item>
         <el-descriptions-item label="办理节点">{{ detailRow.nodeName || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="办理人">{{ detailRow.handler || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="发起人">{{ detailRow.createBy || '-' }}</el-descriptions-item>
         <el-descriptions-item label="处理类型">
           <el-tag size="small" :type="getSkipTypeTag(detailRow.skipType)">
             {{ SkipTypeEnum[detailRow.skipType] || detailRow.skipType }}

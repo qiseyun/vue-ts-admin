@@ -39,7 +39,8 @@
 
       <!-- 表格 -->
       <el-table v-loading="loading" :data="tableData" border stripe row-key="id">
-        <el-table-column prop="id" label="ID" width="300" />
+        <el-table-column prop="id" label="ID" width="280" />
+        <el-table-column prop="flowCode" label="流程编码" width="140" show-overflow-tooltip />
         <el-table-column prop="flowName" label="流程名称" min-width="140" show-overflow-tooltip />
         <el-table-column prop="businessId" label="业务ID" width="130" show-overflow-tooltip />
         <el-table-column prop="nodeName" label="当前节点" width="130" show-overflow-tooltip />
@@ -52,7 +53,7 @@
         </el-table-column>
         <el-table-column prop="createBy" label="发起人" width="100" />
         <el-table-column prop="createTime" label="创建时间" width="170" />
-        <el-table-column label="操作" width="200" fixed="right">
+        <el-table-column label="操作" width="280" fixed="right">
           <template #default="{ row }">
             <el-button
                 v-permission="'system:flow:ins:list'"
@@ -66,11 +67,21 @@
             </el-button>
             <el-button
                 v-permission="'system:flow:ins:edit'"
+                type="success"
+                size="small"
+                link
+                icon="VideoPlay"
+                @click="handleActive(row)"
+            >
+              激活
+            </el-button>
+            <el-button
+                v-permission="'system:flow:ins:edit'"
                 type="warning"
                 size="small"
                 link
                 icon="VideoPause"
-                @click="handleToggleActive(row)"
+                @click="handleUnactive(row)"
             >
               挂起
             </el-button>
@@ -135,6 +146,7 @@
     <el-dialog v-model="detailDialogVisible" title="实例详情" width="700px" :close-on-click-modal="false">
       <el-descriptions v-if="detailRow" :column="2" border>
         <el-descriptions-item label="实例ID">{{ detailRow.id }}</el-descriptions-item>
+        <el-descriptions-item label="流程编码">{{ detailRow.flowCode || '-' }}</el-descriptions-item>
         <el-descriptions-item label="流程名称">{{ detailRow.flowName || '-' }}</el-descriptions-item>
         <el-descriptions-item label="业务ID">{{ detailRow.businessId || '-' }}</el-descriptions-item>
         <el-descriptions-item label="当前节点">{{ detailRow.nodeName || '-' }}</el-descriptions-item>
@@ -163,6 +175,7 @@ import {
   getFlowInsList,
   getFlowInsDetail,
   startFlow,
+  activeFlowIns,
   unactiveFlowIns,
   deleteFlowIns,
 } from '@/api/flow'
@@ -274,8 +287,21 @@ const handleStartSubmit = async () => {
   }
 }
 
-// ========== 挂起 ==========
-const handleToggleActive = async (row: FlowInsVo) => {
+// ========== 激活/挂起 ==========
+const handleActive = async (row: FlowInsVo) => {
+  try {
+    await ElMessageBox.confirm(`确定激活该流程实例吗？`, '激活确认', {
+      confirmButtonText: '确定', cancelButtonText: '取消', type: 'info',
+    })
+    await activeFlowIns(row.id)
+    ElMessage.success('已激活')
+    await fetchData()
+  } catch (e: any) {
+    if (e !== 'cancel') ElMessage.error(e?.message || '操作失败')
+  }
+}
+
+const handleUnactive = async (row: FlowInsVo) => {
   try {
     await ElMessageBox.confirm(`确定挂起该流程实例吗？挂起后将无法继续流转。`, '挂起确认', {
       confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning',

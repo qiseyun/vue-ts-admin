@@ -39,7 +39,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="到达时间" width="170" />
-        <el-table-column label="操作" width="420" fixed="right">
+        <el-table-column label="操作" width="520" fixed="right">
           <template #default="{ row }">
             <el-button v-permission="'system:flow:task:approve'" type="success" size="small" @click="handlePass(row)">
               通过
@@ -53,8 +53,17 @@
             <el-button v-permission="'system:flow:task:approve'" type="info" size="small" @click="handleDepute(row)">
               委派
             </el-button>
+            <el-button v-permission="'system:flow:task:approve'" type="primary" size="small" plain @click="handleAddSignature(row)">
+              加签
+            </el-button>
+            <el-button v-permission="'system:flow:task:approve'" type="warning" size="small" plain @click="handleReductionSignature(row)">
+              减签
+            </el-button>
             <el-button v-permission="'system:flow:task:approve'" type="danger" size="small" plain @click="handleTermination(row)">
               终止
+            </el-button>
+            <el-button v-permission="'system:flow:task:approve'" type="info" size="small" plain @click="handleRevoke(row)">
+              撤销
             </el-button>
           </template>
         </el-table-column>
@@ -72,16 +81,40 @@
       />
     </el-card>
 
-    <!-- 操作弹窗（通过/驳回/转办/委派/终止共用） -->
-    <el-dialog v-model="actionDialogVisible" :title="actionDialogTitle" width="520px" :close-on-click-modal="false">
+    <!-- 操作弹窗（通过/驳回/转办/委派/加签/减签/终止/撤销共用） -->
+    <el-dialog v-model="actionDialogVisible" :title="actionDialogTitle" width="550px" :close-on-click-modal="false">
       <el-form ref="actionFormRef" :model="actionForm" label-width="100px">
-        <!-- 转办/委派：指定处理人 -->
+        <!-- 转办/委派/加签：指定目标处理人 -->
         <el-form-item
-            v-if="actionType === 'transfer' || actionType === 'depute'"
+            v-if="['transfer', 'depute', 'addSignature'].includes(actionType)"
             label="目标处理人"
             prop="addHandlers"
+            :required="['transfer', 'depute', 'addSignature'].includes(actionType)"
         >
-          <el-input v-model="actionHandlersInput" placeholder="多个用逗号分隔，如 user:zhangsan,user:lisi" />
+          <el-input v-model="actionHandlersInput" placeholder="多个用逗号分隔，如 user:zhangsan,role:2" />
+        </el-form-item>
+        <!-- 减签：要移除的处理人 -->
+        <el-form-item
+            v-if="actionType === 'reductionSignature'"
+            label="移除处理人"
+            prop="reductionHandlers"
+            required
+        >
+          <el-input v-model="actionReductionHandlersInput" placeholder="多个用逗号分隔，如 user:lisi" />
+        </el-form-item>
+        <!-- 通过/驳回：下一节点权限标识 -->
+        <el-form-item
+            v-if="actionType === 'pass' || actionType === 'reject'"
+            label="权限标识"
+        >
+          <el-input v-model="actionPermissionFlag" placeholder="多个用逗号分隔，如 role:2,role:3（可选）" />
+        </el-form-item>
+        <!-- 通过/驳回：跳转节点 -->
+        <el-form-item
+            v-if="actionType === 'pass' || actionType === 'reject'"
+            label="跳转节点"
+        >
+          <el-input v-model="actionNodeCode" placeholder="目标节点编码（可选，不填按连线流转）" />
         </el-form-item>
         <!-- 审批意见 -->
         <el-form-item label="审批意见">
@@ -111,7 +144,10 @@ import {
   rejectTask,
   transferTask,
   deputeTask,
+  addSignature,
+  reductionSignature,
   terminationTask,
+  revokeFlow,
 } from '@/api/flow'
 import type { FlowTaskVo, FlowActionDto } from '@/types/flow'
 import { FlowStatusEnum } from '@/types/flow'
@@ -163,32 +199,46 @@ const handleReset = () => {
 const handleSizeChange = () => { pagination.value.page = 1; fetchData() }
 
 // ========== 操作弹窗 ==========
+type ActionType = 'pass' | 'reject' | 'transfer' | 'depute' | 'addSignature' | 'reductionSignature' | 'termination' | 'revoke'
+
 const actionDialogVisible = ref(false)
 const actionDialogTitle = ref('')
-const actionType = ref<'pass' | 'reject' | 'transfer' | 'depute' | 'termination'>('pass')
+const actionType = ref<ActionType>('pass')
 const actionLoading = ref(false)
 const actionFormRef = ref()
 const currentTask = ref<FlowTaskVo | null>(null)
 const actionHandlersInput = ref('')
+const actionReductionHandlersInput = ref('')
+const actionPermissionFlag = ref('')
+const actionNodeCode = ref('')
 
 const actionForm = ref({
   message: '',
 })
 
-const titleMap: Record<string, string> = {
+const titleMap: Record<ActionType, string> = {
   pass: '审批通过',
   reject: '审批驳回',
   transfer: '转办',
   depute: '委派',
+  addSignature: '加签',
+  reductionSignature: '减签',
   termination: '终止流程',
+  revoke: '撤销流程',
 }
 
-const openActionDialog = (row: FlowTaskVo, type: typeof actionType.value) => {
+/** 需要 addHandlers 的操作类型 */
+const needAddHandlers = (type: ActionType) => ['transfer', 'depute', 'addSignature'].includes(type)
+
+const openActionDialog = (row: FlowTaskVo, type: ActionType) => {
   currentTask.value = row
   actionType.value = type
   actionDialogTitle.value = `${titleMap[type]} - ${row.flowName || ''}`
   actionForm.value = { message: '' }
   actionHandlersInput.value = ''
+  actionReductionHandlersInput.value = ''
+  actionPermissionFlag.value = ''
+  actionNodeCode.value = ''
   actionDialogVisible.value = true
   setTimeout(() => actionFormRef.value?.clearValidate(), 0)
 }
@@ -197,50 +247,76 @@ const handlePass = (row: FlowTaskVo) => openActionDialog(row, 'pass')
 const handleReject = (row: FlowTaskVo) => openActionDialog(row, 'reject')
 const handleTransfer = (row: FlowTaskVo) => openActionDialog(row, 'transfer')
 const handleDepute = (row: FlowTaskVo) => openActionDialog(row, 'depute')
+const handleAddSignature = (row: FlowTaskVo) => openActionDialog(row, 'addSignature')
+const handleReductionSignature = (row: FlowTaskVo) => openActionDialog(row, 'reductionSignature')
 const handleTermination = (row: FlowTaskVo) => openActionDialog(row, 'termination')
+const handleRevoke = (row: FlowTaskVo) => openActionDialog(row, 'revoke')
 
 const handleActionSubmit = async () => {
   if (!currentTask.value) return
   actionLoading.value = true
   try {
     const taskId = currentTask.value.id
+    const instanceId = currentTask.value.instanceId
+
+    // 构建请求体（skipType 由 API 自动确定，无需传入）
     const data: FlowActionDto = {
-      taskId,
-      skipType: actionType.value.toUpperCase(),
       message: actionForm.value.message,
     }
 
-    // 转办/委派需要 addHandlers
-    if (actionType.value === 'transfer' || actionType.value === 'depute') {
+    // 转办/委派/加签需要 taskId + addHandlers
+    if (needAddHandlers(actionType.value)) {
       if (!actionHandlersInput.value.trim()) {
         ElMessage.warning('请输入目标处理人')
         actionLoading.value = false
         return
       }
+      data.taskId = taskId
       data.addHandlers = actionHandlersInput.value.split(',').map(s => s.trim()).filter(Boolean)
     }
 
+    // 减签需要 taskId + reductionHandlers
+    if (actionType.value === 'reductionSignature') {
+      if (!actionReductionHandlersInput.value.trim()) {
+        ElMessage.warning('请输入要移除的处理人')
+        actionLoading.value = false
+        return
+      }
+      data.taskId = taskId
+      data.reductionHandlers = actionReductionHandlersInput.value.split(',').map(s => s.trim()).filter(Boolean)
+    }
+
+    // 撤销需要 instanceId
+    if (actionType.value === 'revoke') {
+      data.instanceId = instanceId
+    }
+
+    // 终止支持 taskId 或 instanceId
+    if (actionType.value === 'termination') {
+      data.taskId = taskId
+    }
+
+    // 通过/驳回支持 taskId、permissionFlag、nodeCode
+    if (actionType.value === 'pass' || actionType.value === 'reject') {
+      data.taskId = taskId
+      if (actionPermissionFlag.value.trim()) {
+        data.permissionFlag = actionPermissionFlag.value.split(',').map(s => s.trim()).filter(Boolean)
+      }
+      if (actionNodeCode.value.trim()) {
+        data.nodeCode = actionNodeCode.value.trim()
+      }
+    }
+
+    // 调用对应 API
     switch (actionType.value) {
-      case 'pass':
-        data.skipType = 'PASS'
-        await passTask(data)
-        break
-      case 'reject':
-        data.skipType = 'REJECT'
-        await rejectTask(data)
-        break
-      case 'transfer':
-        data.skipType = 'TRANSFER'
-        await transferTask(data)
-        break
-      case 'depute':
-        data.skipType = 'DEPUTE'
-        await deputeTask(data)
-        break
-      case 'termination':
-        data.skipType = 'TERMINATION'
-        await terminationTask(data)
-        break
+      case 'pass': await passTask(data); break
+      case 'reject': await rejectTask(data); break
+      case 'transfer': await transferTask(data); break
+      case 'depute': await deputeTask(data); break
+      case 'addSignature': await addSignature(data); break
+      case 'reductionSignature': await reductionSignature(data); break
+      case 'termination': await terminationTask(data); break
+      case 'revoke': await revokeFlow(data); break
     }
     ElMessage.success('操作成功')
     actionDialogVisible.value = false

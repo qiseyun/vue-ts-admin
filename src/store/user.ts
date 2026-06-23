@@ -1,6 +1,7 @@
 import {defineStore} from 'pinia'
 import type {UserInfo} from '@/types/auth.ts'
 import {getUserInfo, getPermissions, logout as logoutApi} from '@/api/auth'
+import {wsService} from '@/utils/websocket'
 
 interface UserState {
   token: string
@@ -74,6 +75,8 @@ export const useUserStore = defineStore('user', {
     // 登录
     async login(token: string, expiresTime: number) {
       this.setToken(token, expiresTime)
+      // 建立 WebSocket 连接
+      wsService.connect(token)
       // 获取用户信息
       await this.fetchUserInfo()
       // 获取权限列表
@@ -111,6 +114,8 @@ export const useUserStore = defineStore('user', {
       } catch (error) {
         console.error('退出登录接口调用失败：', error)
       } finally {
+        // 断开 WebSocket 连接
+        wsService.disconnect()
         this.token = ''
         this.expiresTime = 0
         this.userInfo = null
@@ -162,6 +167,10 @@ export const useUserStore = defineStore('user', {
     async initUserInfo() {
       if (this.isLogin && this.token) {
         try {
+          // 恢复 WebSocket 连接（页面刷新后）
+          if (!wsService.isConnected) {
+            wsService.connect(this.token)
+          }
           // 尝试获取最新的用户信息
           await this.fetchUserInfo()
           // 尝试获取最新的权限列表

@@ -32,8 +32,6 @@ export const NodeTypeEnum: Record<number, string> = {
   0: '开始节点',
   1: '中间节点',
   2: '结束节点',
-  3: '排他网关',
-  4: '并行网关',
 }
 
 // ==================== 流程定义 ====================
@@ -81,6 +79,7 @@ export interface FlowDefQuery {
 export interface FlowInsVo {
   id: string
   definitionId: string
+  flowCode?: string
   flowName?: string
   businessId?: string
   nodeType?: number
@@ -111,11 +110,15 @@ export interface FlowTaskVo {
   id: string
   definitionId: string
   instanceId: string
+  flowCode?: string
   flowName?: string
   nodeCode: string
   nodeName: string
   nodeType?: number
+  permissionFlag?: string    // 权限标识，如 "role:1@@role:2"
+  handler?: string           // 当前办理人
   flowStatus: string
+  createBy?: string           // 发起人
   createTime?: string
   updateTime?: string
 }
@@ -131,8 +134,10 @@ export interface FlowHisTaskVo {
   nodeName: string
   nodeType?: number
   flowStatus: string
+  handler?: string           // 办理人
   skipType: string          // PASS/REJECT/TRANSFER/DEPUTE/ADDSIGNATURE/REDUCTIONSIGNATURE/TERMINATION/REVOKE
   message?: string
+  createBy?: string           // 发起人
   createTime?: string
 }
 
@@ -162,12 +167,13 @@ export interface StartFlowEvt {
   permissionFlag?: string[]
 }
 
-/** 通用审批操作参数 FlowActionDto */
+/** 通用审批操作参数 FlowActionDto
+ * @note skipType 由各操作接口自动确定，调用方无需传入
+ */
 export interface FlowActionDto {
   taskId?: string
   instanceId?: string
   nodeCode?: string
-  skipType: string
   message?: string
   variable?: Record<string, any>
   permissionFlag?: string[]
